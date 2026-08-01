@@ -1,5 +1,9 @@
 name: CodeQL Security Scan
 
+permissions:
+  contents: read          # Базовое разрешение для чтения кода
+  security-events: write  # Это разрешение нужно CodeQL для загрузки результатов
+  
 on:
   push:
     branches: [ main, master ]
