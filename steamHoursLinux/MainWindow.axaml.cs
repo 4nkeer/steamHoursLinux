@@ -46,7 +46,10 @@ namespace steamHoursLinux
         private readonly IBrush borderDefault = SolidColorBrush.Parse("#00A2FF");
 
         private static readonly HttpClient httpClient = new HttpClient();
-        private static readonly string configPath = "config.json";
+
+        // Общая папка config и путь к config.json в ней
+        private static readonly string configDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config");
+        private static readonly string configPath = Path.Combine(configDirectory, "config.json");
 
         public MainWindow()
         {
@@ -72,13 +75,12 @@ namespace steamHoursLinux
             };
         }
 
-        
         // Загрузка настроек из файла
         private void LoadConfig()
         {
             try
             {
-                if (File.Exists(configPath))
+                if (Directory.Exists(configDirectory) && File.Exists(configPath))
                 {
                     string json = File.ReadAllText(configPath);
                     var config = JsonSerializer.Deserialize<AppConfig>(json);
@@ -96,20 +98,32 @@ namespace steamHoursLinux
             }
         }
 
-        // Сохранение настроек в файл
+        // Сохранение настроек в файл (проверяем и создаем папку config при сохранении, если активен чекбокс или нужно сохранить)
         private void SaveConfig()
         {
             try
             {
-                var config = new AppConfig
-                {
-                    RememberMe = rememberMeCheckBox.IsChecked ?? false,
-                    Login = (rememberMeCheckBox.IsChecked == true) ? (loginBox.Text?.Trim() ?? "") : "",
-                    Password = (rememberMeCheckBox.IsChecked == true) ? (passwordBox.Text?.Trim() ?? "") : ""
-                };
+                bool rememberMe = rememberMeCheckBox.IsChecked ?? false;
 
-                string json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(configPath, json);
+                // Если чекбокс активен, гарантируем создание папки config
+                if (rememberMe)
+                {
+                    Directory.CreateDirectory(configDirectory);
+                }
+
+                // Если папка существует и чекбокс снят — можем записать пустой конфиг или удалить файл, но сохраним логику структуры
+                if (Directory.Exists(configDirectory))
+                {
+                    var config = new AppConfig
+                    {
+                        RememberMe = rememberMe,
+                        Login = rememberMe ? (loginBox.Text?.Trim() ?? "") : "",
+                        Password = rememberMe ? (passwordBox.Text?.Trim() ?? "") : ""
+                    };
+
+                    string json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
+                    File.WriteAllText(configPath, json);
+                }
             }
             catch (Exception ex)
             {
@@ -154,7 +168,7 @@ namespace steamHoursLinux
             // Обработка получения хэша аватара от воркера
             worker.OnAvatarHashReceived += (hash) => Dispatcher.UIThread.Post(() =>
             {
-                System.Diagnostics.Debug.WriteLine($"🔥 Получен хэш аватара в MainWindow: '{hash}'"); // <--- Проверьте, появляется ли это в выводе
+                System.Diagnostics.Debug.WriteLine($"🔥 Получен хэш аватара в MainWindow: '{hash}'");
 
                 avatarHash = hash;
 
@@ -164,7 +178,7 @@ namespace steamHoursLinux
                 }
 
                 avatarUrl = $"https://avatars.steamstatic.com/{avatarHash}_full.jpg";
-                System.Diagnostics.Debug.WriteLine($"🔗 Ссылка на аватар: {avatarUrl}"); // <--- Проверьте ссылку
+                System.Diagnostics.Debug.WriteLine($"🔗 Ссылка на аватар: {avatarUrl}");
 
                 _ = LoadImageAsync(avatarUrl, userAvatarBgImg);
             });
@@ -197,7 +211,6 @@ namespace steamHoursLinux
             {
                 activeFarmingAppIds.Clear();
 
-                // Берем список игр напрямую из SteamWorker
                 if (worker.CurrentFarmingAppIds != null)
                 {
                     foreach (var id in worker.CurrentFarmingAppIds)
@@ -206,7 +219,6 @@ namespace steamHoursLinux
                     }
                 }
 
-                // Визуальное оформление (как при ручном запуске)
                 startBtn.IsEnabled = false;
                 loginBtn.IsEnabled = false;
                 stopBtn.IsEnabled = true;

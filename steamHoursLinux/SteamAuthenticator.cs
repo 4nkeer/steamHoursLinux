@@ -11,7 +11,7 @@ namespace steamHoursLinux
     {
         private readonly string username;
         private readonly string password;
-        private readonly string tokenFile;
+        private readonly string tokenFilePath;
 
         public string AccessToken { get; private set; }
         public string RefreshToken { get; private set; }
@@ -27,7 +27,13 @@ namespace steamHoursLinux
         {
             this.username = username;
             this.password = password;
-            this.tokenFile = $"tokens_{username}.txt";
+
+           
+            string tokensDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config");
+            Directory.CreateDirectory(tokensDirectory);
+
+         
+            this.tokenFilePath = Path.Combine(tokensDirectory, $"tokens_{username}.txt");
         }
 
         public void LoginWithToken(SteamUser steamUser, SteamClient steamClient, bool isLoggedOn)
@@ -154,9 +160,9 @@ namespace steamHoursLinux
         {
             try
             {
-                if (File.Exists(tokenFile))
+                if (File.Exists(tokenFilePath))
                 {
-                    string[] lines = File.ReadAllLines(tokenFile);
+                    string[] lines = File.ReadAllLines(tokenFilePath);
                     if (lines.Length > 0) RefreshToken = lines[0];
                     if (lines.Length > 1) AccessToken = lines[1];
                     if (lines.Length > 2 && ulong.TryParse(lines[2], out ulong steamId64))
@@ -179,7 +185,11 @@ namespace steamHoursLinux
             {
                 CurrentSteamId = steamId ?? CurrentSteamId;
                 string content = $"{refresh}\n{access}\n{(CurrentSteamId != null ? CurrentSteamId.ConvertToUInt64().ToString() : "")}";
-                File.WriteAllText(tokenFile, content);
+
+                // На всякий случай проверяем директорию перед сохранением
+                Directory.CreateDirectory(Path.GetDirectoryName(tokenFilePath));
+
+                File.WriteAllText(tokenFilePath, content);
                 Log("💾 Токены сохранены");
             }
             catch (Exception ex)
@@ -192,9 +202,9 @@ namespace steamHoursLinux
         {
             try
             {
-                if (File.Exists(tokenFile))
+                if (File.Exists(tokenFilePath))
                 {
-                    File.Delete(tokenFile);
+                    File.Delete(tokenFilePath);
                     Log("🗑️ Файл токенов удален");
                 }
                 AccessToken = null;
@@ -212,9 +222,6 @@ namespace steamHoursLinux
         private void Log(string message) => OnLogMessage?.Invoke(message);
     }
 
-    /// <summary>
-    /// Кастомный обработчик 2FA кодов для SteamKit2 Authentication API
-    /// </summary>
     internal class CustomUserAuthenticator : IAuthenticator
     {
         private readonly Func<Task<string>> _getTwoFactorCodeFunc;
