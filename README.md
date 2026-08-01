@@ -12,6 +12,18 @@
 
 ---
 
+# Запуск на Windows
+
+1. Скачать репозиторий
+2. Перейти в папку **net 10.0** по пути: ***\steamHoursLinux\steamHoursLinux\bin\Release\net10.0***
+3. Запустить **steamHoursLinux.exe**
+
+# Запуск на Linux
+
+1. Скачать репозиторий git clone https://github.com/4nkeer/steamHoursLinux.git
+2. Запустить steamHoursLinux.dll (teamHoursLinux/steamHoursLinux/bin/Release/net10.0) командой dotnet steamHoursLinux.dll
+
+---
 # Что дальше?
 
 * Возможность открывать **достижения**
