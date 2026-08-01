@@ -1,0 +1,281 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="steamHoursLinux.MainWindow"
+        Title="Steam Hour Booster"
+        Width="1280" Height="820"
+        MinWidth="750" MinHeight="650"
+        WindowStartupLocation="CenterScreen"
+        Background="#181C25"
+        Foreground="#F0F0F0"
+        FontFamily="avares://steamHoursLinux/Assets/Fonts/Noto_Sans#Noto Sans">
+
+    <Grid ColumnDefinitions="270,*">
+        <Border Grid.Column="0" Background="#141820" Padding="15">
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto">
+                <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Margin="0,0,0,15">
+                    <!-- Аватарка пользователя -->
+                    <Border Grid.Column="0" Width="44" Height="44" CornerRadius="6" ClipToBounds="True" Background="#1C222D" Margin="0,0,10,0">
+                        <Image x:Name="userAvatarBgImg" Stretch="UniformToFill"/>
+                    </Border>
+                    
+                    <!-- Название и автор -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="STEAM HOUR BOOSTER" FontSize="16" FontWeight="Bold" Foreground="#00A2FF"/>
+                        
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                             <HyperlinkButton Content="by ankeer" 
+                                              NavigateUri="https://steamcommunity.com/id/4nkeer/" 
+                                              FontSize="10" 
+                                              FontWeight="Bold" 
+                                              Foreground="#5c5c5c" 
+                                              Padding="0"
+                                              Margin="0">
+                                 <HyperlinkButton.Styles>
+                                     <Style Selector="HyperlinkButton:pointerover /template/ ContentPresenter">
+                                         <Setter Property="Foreground" Value="#00A2FF"/>
+                                     </Style>
+                                     <Style Selector="HyperlinkButton">
+                                         <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"/>
+                                     </Style>
+                                 </HyperlinkButton.Styles>
+                             </HyperlinkButton>
+
+                            <!-- Иконка GitHub через HyperlinkButton -->
+                            <HyperlinkButton NavigateUri="https://github.com/4nkeer/steamHoursLinux" Padding="0" VerticalAlignment="Center">
+                                <ToolTip.Tip>GitHub</ToolTip.Tip>
+                                <HyperlinkButton.Styles>
+                                    <Style Selector="HyperlinkButton /template/ ContentPresenter">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                    </Style>
+                                    <Style Selector="HyperlinkButton:pointerover /template/ ContentPresenter">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                    </Style>
+                                    <Style Selector="HyperlinkButton">
+                                        <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"/>
+                                    </Style>
+                                </HyperlinkButton.Styles>
+                                <Border Width="15" Height="15" Background="#5c5c5c">
+                                    <Border.Styles>
+                                        <Style Selector="HyperlinkButton:pointerover Border">
+                                            <Setter Property="Background" Value="#00A2FF"/>
+                                        </Style>
+                                        <Style Selector="Border">
+                                            <Setter Property="Transitions">
+                                                <Transitions>
+                                                    <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                                                </Transitions>
+                                            </Setter>
+                                        </Style>
+                                    </Border.Styles>
+                                    <Border.OpacityMask>
+                                        <ImageBrush Source="avares://steamHoursLinux/Assets/Icons/github.png" Stretch="Uniform"/>
+                                    </Border.OpacityMask>
+                                </Border>
+                            </HyperlinkButton>
+
+                            <!-- Иконка Steam через HyperlinkButton -->
+                            <HyperlinkButton NavigateUri="https://steamcommunity.com/id/4nkeer/" Padding="0" VerticalAlignment="Center">
+                                <ToolTip.Tip>Steam</ToolTip.Tip>
+                                <HyperlinkButton.Styles>
+                                    <Style Selector="HyperlinkButton /template/ ContentPresenter">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                    </Style>
+                                    <Style Selector="HyperlinkButton:pointerover /template/ ContentPresenter">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                    </Style>
+                                    <Style Selector="HyperlinkButton">
+                                        <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"/>
+                                    </Style>
+                                </HyperlinkButton.Styles>
+                                <Border Width="15" Height="15" Background="#5c5c5c">
+                                    <Border.Styles>
+                                        <Style Selector="HyperlinkButton:pointerover Border">
+                                            <Setter Property="Background" Value="#00A2FF"/>
+                                        </Style>
+                                        <Style Selector="Border">
+                                            <Setter Property="Transitions">
+                                                <Transitions>
+                                                    <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                                                </Transitions>
+                                            </Setter>
+                                        </Style>
+                                    </Border.Styles>
+                                    <Border.OpacityMask>
+                                        <ImageBrush Source="avares://steamHoursLinux/Assets/Icons/steam-logo.png" Stretch="Uniform"/>
+                                    </Border.OpacityMask>
+                                </Border>
+                            </HyperlinkButton>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+
+                <TextBlock Grid.Row="1" Text="АВТОРИЗАЦИЯ" FontSize="11" FontWeight="Bold" Foreground="#8C96A5" Margin="0,5,0,5"/>
+                
+                <Border Grid.Row="2" Background="#12161D" BorderBrush="#8C96A5" BorderThickness="1" CornerRadius="4" Margin="0,0,0,5">
+                    <TextBox x:Name="loginBox" BorderThickness="0" PlaceholderText="Логин" Foreground="#8C96A5" Background="#12161D" CornerRadius="5" PlaceholderForeground="#F0F0F0"> 
+                        <TextBox.Styles>
+                            <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                                <Setter Property="Background" Value="#1A2230"/>
+                            </Style>
+                        </TextBox.Styles>
+                    </TextBox>
+                </Border>
+                
+                <Border Grid.Row="3" Background="#12161D" BorderBrush="#8C96A5" BorderThickness="1" CornerRadius="4" Margin="0,0,0,5">
+                    <TextBox x:Name="passwordBox" BorderThickness="0" PasswordChar="•" PlaceholderText="Пароль" Foreground="#8C96A5" Background="#12161D" CornerRadius="5" PlaceholderForeground="#F0F0F0">
+                        <TextBox.Styles>
+                            <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                                <Setter Property="Background" Value="#1A2230"/>
+                            </Style>
+                        </TextBox.Styles>
+                    </TextBox>
+                </Border>
+                
+                <Border Grid.Row="4" Background="#12161D" BorderBrush="#8C96A5" BorderThickness="1" CornerRadius="4" Margin="0,0,0,5">
+                    <TextBox x:Name="appIdBox" BorderThickness="0" PlaceholderText="AppID (необязательно)" Foreground="#8C96A5" Background="#12161D" CornerRadius="5" PlaceholderForeground="#F0F0F0"> 
+                        <TextBox.Styles>
+                            <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                                <Setter Property="Background" Value="#1A2230"/>
+                            </Style>
+                        </TextBox.Styles>   
+                    </TextBox>
+                </Border>
+
+                <!-- ☑ Галочка «Запомнить данные» -->
+                <CheckBox x:Name="rememberMeCheckBox" Grid.Row="5" Content="Запомни меня" FontSize="11" Foreground="#8C96A5" Margin="0,0,0,10"> 
+                    <CheckBox.Styles>
+                        <Style Selector="CheckBox:pointerover /template/ ContentPresenter">
+                            <Setter Property="Foreground" Value="White"/>
+                        </Style>
+                        <Style Selector="CheckBox:pointerover /template/ Border#NormalRectangle">
+                            <Setter Property="BorderBrush" Value="#8C96A5"/>
+                        </Style>
+                    </CheckBox.Styles>
+                </CheckBox>
+
+                <Button x:Name="loginBtn" Grid.Row="6" Content="✅ Войти в аккаунт" Click="LoginBtn_Click" 
+                        Background="#00A2FF" Foreground="White" FontWeight="Bold" 
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                        Height="38" Margin="0,0,0,15"> 
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover /template/ ContentPresenter">
+                            <Setter Property="Background" Value="#007ACC"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Style>
+                    </Button.Styles>
+                </Button> 
+
+                <TextBlock Grid.Row="7" Text="УПРАВЛЕНИЕ ФАРМОМ" FontSize="11" FontWeight="Bold" Foreground="#8C96A5" Margin="0,5,0,5"/>
+
+                <Button x:Name="startBtn" Grid.Row="8" Content="▶ Запустить фарм" Click="StartBtn_Click" IsEnabled="False"
+                        Background="#5CAC22" Foreground="White" FontWeight="Bold" 
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                        Height="38" Margin="0,0,0,5">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover /template/ ContentPresenter">
+                            <Setter Property="Background" Value="#4c8c1d"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Style>
+                    </Button.Styles>
+                </Button>
+
+                <Button x:Name="stopBtn" Grid.Row="9" Content="⏹ Остановить фарм" Click="StopBtn_Click" IsEnabled="False"
+                        Background="#DC3545" Foreground="White" FontWeight="Bold" 
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                        Height="38" Margin="0,0,0,15"> 
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover /template/ ContentPresenter">
+                            <Setter Property="Background" Value="#bd2635"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Style>
+                    </Button.Styles>
+                </Button>
+
+                <!-- ⏱ ОТДЕЛЬНЫЙ БЛОК ТАЙМЕРА ФАРМА -->
+                <Border x:Name="timerCardPanel" Grid.Row="10" Background="#12161D" CornerRadius="6" Padding="12,10" Margin="0,0,0,15" BorderBrush="#2A313F" BorderThickness="1">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="ВРЕМЯ ФАРМА" FontSize="10" FontWeight="Bold" Foreground="#8C96A5"/>
+                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <TextBlock Text="⏱" FontSize="16" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="timerText" 
+                                       Text="00:00:00" 
+                                       FontSize="15" 
+                                       FontWeight="Bold" 
+                                       Foreground="#8C96A5"
+                                       FontFamily="avares://steamHoursLinux/Assets/Fonts/JetBrains_Mono#JetBrains Mono" 
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <TextBlock x:Name="farmingInfoLabel" Text="Фарм не запущен" FontSize="10" Foreground="#8C96A5" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Статус прижат к нижнему краю -->
+                <TextBlock x:Name="statusLabel" Grid.Row="12" Text="● Статус: Ожидание входа" FontWeight="Bold" Foreground="#8C96A5" TextWrapping="Wrap"/>
+
+                <!-- Окно Steam Guard -->
+                <Border x:Name="guardPanel" Grid.Row="0" Grid.RowSpan="13" Background="#2D3441" CornerRadius="5" Padding="10" IsVisible="False" VerticalAlignment="Center" ZIndex="10">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Код Steam Guard:" FontWeight="Bold"/>
+                        <TextBox x:Name="guardBox" MaxLength="6" TextAlignment="Center" FontFamily="avares://steamHoursLinux/Assets/Fonts/JetBrains_Mono#JetBrains Mono" FontSize="16" FontWeight="Bold"/>
+                        <Button x:Name="guardBtn" Content="Подтвердить код" Click="GuardBtn_Click" Background="#5CAC22" Foreground="White" FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="34"/>
+                        <Button x:Name="guardApproveBtn" Content="📱 Подтвердил в App" Click="GuardApproveBtn_Click" Background="#00A2FF" Foreground="White" FontSize="11" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="34"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Правая главная область с вкладками (TabControl) -->
+        <TabControl Grid.Column="1" Margin="10" Background="Transparent">
+            
+            <!-- Вкладка 1: Библиотека игр -->
+            <TabItem Header="🎮 Библиотека игр" Foreground="#8C96A5">
+                <TabItem.Styles>
+                    <Style Selector="TabItem:pointerover /template/ ContentPresenter">
+                        <Setter Property="Foreground" Value="#00A2FF"/>
+                    </Style>
+                </TabItem.Styles>
+                <Grid RowDefinitions="Auto,*,Auto,190" Margin="5">
+                    
+                    <!-- Поиск -->
+                    <Border Grid.Row="0" Background="#12161D" BorderBrush="#8C96A5" BorderThickness="1" CornerRadius="4" Margin="0,0,0,10">
+                        <TextBox x:Name="searchBox" PlaceholderText="🔍 Поиск игры по названию или AppID..." 
+                                 Foreground="#8C96A5" Background="#12161D" BorderThickness="0" PlaceholderForeground="#F0F0F0" CornerRadius="5" TextChanged="SearchBox_TextChanged"> 
+                            <TextBox.Styles>
+                                <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                                    <Setter Property="Background" Value="#1A2230"/>
+                                </Style>
+                            </TextBox.Styles>
+                        </TextBox>
+                    </Border>
+
+                    <!-- Список игр -->
+                    <ScrollViewer x:Name="gamesScrollViewer" Grid.Row="1" Background="#222834" Margin="0,0,0,10">
+                        <WrapPanel x:Name="gamesFlowPanel" ItemWidth="175" ItemHeight="85" Margin="5"/>
+                    </ScrollViewer>
+
+                    <TextBlock Grid.Row="2" Text="Журнал событий" FontSize="12" FontWeight="Bold" Foreground="#8C96A5" Margin="0,0,0,5"/>
+
+                    <!-- Окно логов -->
+                    <ScrollViewer x:Name="logScrollViewer" Grid.Row="3" Background="#12161D">
+                        <SelectableTextBlock x:Name="logBox" FontFamily="avares://steamHoursLinux/Assets/Fonts/JetBrains_Mono#JetBrains Mono" FontSize="12" Foreground="#B4C8DC" Padding="8" TextWrapping="Wrap"/>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+
+            <!-- Вкладка 2: Достижения (заготовка) -->
+            <TabItem Header="🏆 Достижения" Foreground="#8C96A5">
+                <TabItem.Styles>
+                    <Style Selector="TabItem:pointerover /template/ ContentPresenter">
+                        <Setter Property="Foreground" Value="#00A2FF"/>
+                    </Style>
+                </TabItem.Styles>
+                <Grid RowDefinitions="Auto,*" Margin="5">
+                    <TextBlock Grid.Row="1" Text="Здесь в будущем можно разместить список достижений выбранной игры." 
+                               Foreground="#8C96A5" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"/>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</Window>
