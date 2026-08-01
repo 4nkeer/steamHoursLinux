@@ -1,4 +1,4 @@
-# ⏳ Steam Hours Booster(Linux & Windows)
+# ⏱️ Steam Hours Booster(Linux & Windows)
 
 A lightweight and convenient desktop application built on **Avalonia UI** and **.NET 10**, designed to manage your Steam status and simulate playtime (farming hours) for multiple games simultaneously.
 
