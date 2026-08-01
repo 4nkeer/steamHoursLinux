@@ -1,4 +1,4 @@
-# ⏳ Steam Hours
+# ⏳ Steam Hours Booster
 
 **🌐 Choose your language / Выберите язык:**  
 * [🇬🇧 English](README.en.md) 
