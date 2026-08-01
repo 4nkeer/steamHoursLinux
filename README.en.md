@@ -2,6 +2,10 @@
 
 A lightweight and convenient desktop application built on **Avalonia UI** and **.NET 10**, designed to manage your Steam status and simulate playtime (farming hours) for multiple games simultaneously.
 
+❗❗**THE APP DOES NOT SHARE YOUR DATA WITH THIRD PARTIES**
+
+❗❗**THE APPLICATION WORKS WITH STEAM SERVERS**
+
 ---
 
 ## 🖥 Supported Systems
