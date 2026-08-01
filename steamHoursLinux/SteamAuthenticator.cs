@@ -12,7 +12,7 @@ namespace steamHoursLinux
         private readonly string username;
         private readonly string password;
         private readonly string tokenFilePath;
-
+        string currentLang = "ru";
         public string AccessToken { get; private set; }
         public string RefreshToken { get; private set; }
         public SteamID CurrentSteamId { get; set; }
@@ -23,11 +23,11 @@ namespace steamHoursLinux
         public event Action<string> OnLogMessage;
         public event Action OnGuardRequired;
 
-        public SteamAuthenticator(string username, string password)
+        public SteamAuthenticator(string username, string password, string lang)
         {
             this.username = username;
             this.password = password;
-
+            this.currentLang = lang;
            
             string tokensDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config");
             Directory.CreateDirectory(tokensDirectory);
@@ -42,7 +42,7 @@ namespace steamHoursLinux
                 steamClient == null || !steamClient.IsConnected || isLoggedOn)
                 return;
 
-            Log("🔑 Выполняем вход по токену авторизации...");
+            Log(currentLang == "en" ? "🔑 Performing login with authorization token..." : "🔑 Выполняем вход по токену авторизации...");
 
             var details = new SteamUser.LogOnDetails
             {
@@ -61,7 +61,7 @@ namespace steamHoursLinux
 
             if (steamClient == null || !steamClient.IsConnected)
             {
-                Log("⚠️ Клиент не подключен. Авторизация будет выполнена после подключения.");
+                Log(currentLang == "en" ? "⚠️ Client is not connected. Authentication will be performed after connection." : "⚠️ Клиент не подключен. Авторизация будет выполнена после подключения.");
                 return;
             }
 
@@ -69,7 +69,7 @@ namespace steamHoursLinux
 
             try
             {
-                Log($"🔐 Начало авторизации для {username}...");
+                Log(currentLang == "en" ? $"🔐 Starting authentication for {username}..." : $"🔐 Начало авторизации для {username}...");
 
                 var authDetails = new AuthSessionDetails
                 {
@@ -82,7 +82,7 @@ namespace steamHoursLinux
 
                 var authSession = await steamClient.Authentication.BeginAuthSessionViaCredentialsAsync(authDetails).ConfigureAwait(false);
 
-                Log("⏳ Ожидание завершения авторизации (проверка 2FA / мобильного подтверждения)...");
+                Log(currentLang == "en" ? "⏳ Waiting for authentication to complete (2FA / mobile confirmation)..." : "⏳ Ожидание завершения авторизации (проверка 2FA / мобильного подтверждения)...");
                 var pollResult = await authSession.PollingWaitForResultAsync().ConfigureAwait(false);
 
                 if (!string.IsNullOrEmpty(pollResult.RefreshToken))
@@ -90,7 +90,7 @@ namespace steamHoursLinux
                     RefreshToken = pollResult.RefreshToken;
                     AccessToken = pollResult.AccessToken;
 
-                    Log("✅ Токены успешно получены!");
+                    Log(currentLang == "en" ? "✅ Tokens successfully obtained!" : "✅ Токены успешно получены!");
 
                     enqueueAction(() =>
                     {
@@ -105,22 +105,22 @@ namespace steamHoursLinux
                 }
                 else
                 {
-                    Log("❌ Не удалось получить токены.");
-                    onLoginFailed?.Invoke("Ошибка получения токенов");
+                    Log(currentLang == "en" ? "❌ Failed to obtain tokens." : "❌ Не удалось получить токены.");
+                    onLoginFailed?.Invoke(currentLang == "en" ? "Error obtaining tokens" : "Ошибка получения токенов");
                 }
             }
             catch (TaskCanceledException)
             {
-                Log("⚠️ Авторизация отменена из-за разрыва соединения.");
+                Log(currentLang == "en" ? "⚠️ Authentication cancelled due to connection loss." : "⚠️ Авторизация отменена из-за разрыва соединения.");
             }
             catch (AuthenticationException ex)
             {
-                Log($"❌ Ошибка авторизации от Steam: {ex.Result}");
-                onLoginFailed?.Invoke($"Steam Error: {ex.Result}");
+                Log(currentLang == "en" ? $"❌ Steam authentication error: {ex.Result}" : $"❌ Ошибка авторизации от Steam: {ex.Result}");
+                onLoginFailed?.Invoke(currentLang == "en" ? $"Steam Error: {ex.Result}" : $"Ошибка Steam: {ex.Result}");
             }
             catch (Exception ex)
             {
-                Log($"❌ Ошибка авторизации: {ex.Message}");
+                Log(currentLang == "en" ? $"❌ Error during authentication: {ex.Message}" : $"❌ Ошибка авторизации: {ex.Message}");
                 onLoginFailed?.Invoke(ex.Message);
             }
             finally
@@ -132,7 +132,7 @@ namespace steamHoursLinux
         public void SubmitGuardCode(string code)
         {
             code = code?.Trim().ToUpperInvariant();
-            Log($"📨 Введен код Steam Guard: {code}");
+            Log(currentLang == "en" ? $"📨 Entered Steam Guard code: {code}" : $"📨 Введен код Steam Guard: {code}");
 
             if (!string.IsNullOrEmpty(code) && tfaTaskCompletionSource != null && !tfaTaskCompletionSource.Task.IsCompleted)
             {
@@ -142,7 +142,7 @@ namespace steamHoursLinux
 
         private async Task<string> GetTwoFactorCodeFromUserAsync()
         {
-            Log("🔐 Требуется код Steam Guard (2FA)!");
+            Log(currentLang == "en" ? "🔐 Two-factor authentication required (2FA)!" : "🔐 Требуется код Steam Guard (2FA)!");
             OnGuardRequired?.Invoke();
 
             tfaTaskCompletionSource = new TaskCompletionSource<string>();
@@ -170,12 +170,12 @@ namespace steamHoursLinux
                         CurrentSteamId = new SteamID(steamId64);
                     }
 
-                    if (!string.IsNullOrEmpty(RefreshToken)) Log("🔑 Загружен RefreshToken");
+                    if (!string.IsNullOrEmpty(RefreshToken)) Log(currentLang == "en" ? "🔑 RefreshToken loaded" : "🔑 Загружен RefreshToken");
                 }
             }
             catch (Exception ex)
             {
-                Log($"⚠️ Ошибка загрузки токенов: {ex.Message}");
+                Log(currentLang == "en" ? $"⚠️ Error loading tokens: {ex.Message}" : $"⚠️ Ошибка загрузки токенов: {ex.Message}");
             }
         }
 
@@ -186,15 +186,14 @@ namespace steamHoursLinux
                 CurrentSteamId = steamId ?? CurrentSteamId;
                 string content = $"{refresh}\n{access}\n{(CurrentSteamId != null ? CurrentSteamId.ConvertToUInt64().ToString() : "")}";
 
-                // На всякий случай проверяем директорию перед сохранением
                 Directory.CreateDirectory(Path.GetDirectoryName(tokenFilePath));
 
                 File.WriteAllText(tokenFilePath, content);
-                Log("💾 Токены сохранены");
+                Log(currentLang == "en" ? "💾 Tokens saved" : "💾 Токены сохранены");
             }
             catch (Exception ex)
             {
-                Log($"⚠️ Ошибка сохранения токенов: {ex.Message}");
+                Log(currentLang == "en" ? $"⚠️ Error saving tokens: {ex.Message}" : $"⚠️ Ошибка сохранения токенов: {ex.Message}");
             }
         }
 
@@ -205,7 +204,7 @@ namespace steamHoursLinux
                 if (File.Exists(tokenFilePath))
                 {
                     File.Delete(tokenFilePath);
-                    Log("🗑️ Файл токенов удален");
+                    Log(currentLang == "en" ? "🗑️ Tokens file deleted" : "🗑️ Файл токенов удален");
                 }
                 AccessToken = null;
                 RefreshToken = null;
@@ -213,7 +212,7 @@ namespace steamHoursLinux
             }
             catch (Exception ex)
             {
-                Log($"⚠️ Ошибка удаления токенов: {ex.Message}");
+                Log(currentLang == "en" ? $"⚠️ Error clearing tokens: {ex.Message}" : $"⚠️ Ошибка удаления токенов: {ex.Message}");
             }
         }
 

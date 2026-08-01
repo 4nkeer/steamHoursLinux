@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace steamHoursLinux
 {
-    // Класс для структуры сохранения настроек
     public class AppConfig
     {
         public string Login { get; set; } = "";
@@ -25,6 +24,8 @@ namespace steamHoursLinux
     {
         string avatarHash = string.Empty;
         string avatarUrl = string.Empty;
+        string renderGameCardsText = string.Empty;
+        string currentLang = "ru";
         private SteamWorker? worker;
         private List<SteamGameInfo> loadedGames = new List<SteamGameInfo>();
 
@@ -50,14 +51,13 @@ namespace steamHoursLinux
         // Общая папка config и путь к config.json в ней
         private static readonly string configDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config");
         private static readonly string configPath = Path.Combine(configDirectory, "config.json");
-
+        private readonly string langFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "language.txt");
         public MainWindow()
         {
             InitializeComponent();
-
-            // Загружаем сохраненные данные при запуске
+            CheckLanguageFile();
             LoadConfig();
-            logBox.Text = "Событий нет. Жду твоих действий...\n";
+            
             logBox.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center;
             logBox.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center;
             logBox.TextAlignment = Avalonia.Media.TextAlignment.Center;
@@ -94,24 +94,24 @@ namespace steamHoursLinux
             }
             catch (Exception ex)
             {
-                Log($"⚠️ Не удалось загрузить конфиг: {ex.Message}");
+                Log(currentLang == "en" ? $"⚠️ Не удалось загрузить конфиг: {ex.Message}" : $"⚠️ Failed to load config: {ex.Message}");
             }
         }
 
-        // Сохранение настроек в файл (проверяем и создаем папку config при сохранении, если активен чекбокс или нужно сохранить)
+      
         private void SaveConfig()
         {
             try
             {
                 bool rememberMe = rememberMeCheckBox.IsChecked ?? false;
 
-                // Если чекбокс активен, гарантируем создание папки config
+                
                 if (rememberMe)
                 {
                     Directory.CreateDirectory(configDirectory);
                 }
 
-                // Если папка существует и чекбокс снят — можем записать пустой конфиг или удалить файл, но сохраним логику структуры
+               
                 if (Directory.Exists(configDirectory))
                 {
                     var config = new AppConfig
@@ -127,20 +127,78 @@ namespace steamHoursLinux
             }
             catch (Exception ex)
             {
-                Log($"⚠️ Не удалось сохранить конфиг: {ex.Message}");
+                Log(currentLang == "en" ? $"⚠️ Failed to save config: {ex.Message}" : $"⚠️ Не удалось сохранить конфиг: {ex.Message}");
             }
         }
+        private void CheckLanguageFile()
+        {
+            if (File.Exists(langFilePath))
+            {
+                string lang = File.ReadAllText(langFilePath).Trim();
+                ApplyLanguage(lang);
+                languageSelectionPanel.IsVisible = false;
+            }
+            else
+            {
+                languageSelectionPanel.IsVisible = true;
+            }
+        }
+        private void LangRuBtn_Click(object? sender, RoutedEventArgs e)
+        {
+            File.WriteAllText(langFilePath, "ru");
+            ApplyLanguage("ru");
+            languageSelectionPanel.IsVisible = false;
+        }
 
+        private void LangEnBtn_Click(object? sender, RoutedEventArgs e)
+        {
+            File.WriteAllText(langFilePath, "en");
+            ApplyLanguage("en");
+            languageSelectionPanel.IsVisible = false;
+        }
+
+        private void ApplyLanguage(string lang)
+        {
+            currentLang = lang;
+            if (lang == "en")
+            {
+                loginBox.PlaceholderText = "Login";
+                passwordBox.PlaceholderText = "Password";
+                appIdBox.PlaceholderText = "AppID (optional)";
+                rememberMeCheckBox.Content = "Remember me";
+                loginBtn.Content = "✅ Sign In";
+                startBtn.Content = "▶ Start Farming";
+                stopBtn.Content = "⏹ Stop Farming";
+                tbAuth.Text = "AUTHORIZATION";
+                tbManagementFarm.Text = "FARM MANAGEMENT";
+                tbTimerFarm.Text = "FARM TIMER";
+                farmingInfoLabel.Text = "Farming not started";
+                tiLibrary.SetValue(TabItem.HeaderProperty, "🎮 Library games");
+                tiAchievements.SetValue(TabItem.HeaderProperty, "🏆 Achievements");
+                tbTemp.Text = "In the future, you can place a list of achievements for the selected game here.";
+                tbSearchBox.Text = "🔍 Search by name or AppID...";
+                logBox.Text = "There are no events. I'm waiting for your actions...\n";
+                renderGameCardsText = "No games found.";
+                tbLogHeader.Text = "Event log";
+                tbStatusLabel.Text = "● Status: Waiting to enter";
+            }
+            else
+            {
+                renderGameCardsText = "Игры не найдены.";
+                logBox.Text = "Событий нет. Жду твоих действий...\n";
+            }
+           
+        }
         private void LoginBtn_Click(object? sender, RoutedEventArgs e)
         {
             logBox.Text = string.Empty;
             if (string.IsNullOrEmpty(loginBox.Text) || string.IsNullOrEmpty(passwordBox.Text))
             {
-                Log("❌ Введите логин и пароль!");
+                Log(currentLang == "en" ? "❌ Please enter login and password!" : "❌ Введите логин и пароль!");
                 return;
             }
 
-            // Сохраняем или очищаем данные в зависимости от галочки
+            
             SaveConfig();
 
             var initialAppIds = ParseAppIdsFromInput();
@@ -151,24 +209,22 @@ namespace steamHoursLinux
 
             var login = loginBox.Text.Trim();
             var pass = passwordBox.Text.Trim();
-            Log($"🔑 Вход в аккаунт: {login}...");
+            Log(currentLang == "en" ? $"🔑 Signing in: {login}..." : $"🔑 Вход в аккаунт: {login}...");
 
-            worker = new SteamWorker(login, pass, firstAppId);
+            worker = new SteamWorker(login, pass, firstAppId, currentLang);
             worker.OnLogMessage += (msg) => Log(msg);
 
             worker.OnLoginSuccess += () => Dispatcher.UIThread.Post(() =>
             {
                 loginBtn.IsEnabled = true;
                 startBtn.IsEnabled = true;
-                statusLabel.Text = "● Статус: В сети";
-                statusLabel.Foreground = accentGreen;
+                tbStatusLabel.Text = currentLang == "en" ? "● Status: Online" : "● Статус: В сети";
+                tbStatusLabel.Foreground = accentGreen;
                 guardPanel.IsVisible = false;
             });
 
-            // Обработка получения хэша аватара от воркера
             worker.OnAvatarHashReceived += (hash) => Dispatcher.UIThread.Post(() =>
             {
-                System.Diagnostics.Debug.WriteLine($"🔥 Получен хэш аватара в MainWindow: '{hash}'");
 
                 avatarHash = hash;
 
@@ -178,21 +234,22 @@ namespace steamHoursLinux
                 }
 
                 avatarUrl = $"https://avatars.steamstatic.com/{avatarHash}_full.jpg";
-                System.Diagnostics.Debug.WriteLine($"🔗 Ссылка на аватар: {avatarUrl}");
 
                 _ = LoadImageAsync(avatarUrl, userAvatarBgImg);
             });
 
             worker.OnLibraryLoaded += (games) => Dispatcher.UIThread.Post(() =>
             {
+               
                 loadedGames = games ?? new List<SteamGameInfo>();
+              
                 RenderGameCards(loadedGames);
             });
 
             worker.OnLoginFailed += (error) => Dispatcher.UIThread.Post(() =>
             {
                 loginBtn.IsEnabled = true;
-                Log($"❌ Ошибка: {error}");
+                Log(currentLang == "en" ? $"❌ Error: {error}" : $"❌ Ошибка: {error}");
                 guardPanel.IsVisible = false;
             });
 
@@ -202,9 +259,9 @@ namespace steamHoursLinux
                 guardBox.Text = "";
                 guardBox.Focus();
                 loginBtn.IsEnabled = true;
-                Log("🔐 Требуется код Steam Guard!");
-                statusLabel.Text = "● Статус: Ждет Guard";
-                statusLabel.Foreground = Brushes.Orange;
+                Log(currentLang == "en" ? "🔐 Steam Guard code required!" : "🔐 Требуется код Steam Guard!");
+                tbStatusLabel.Text = "● Статус: Ждет Guard";
+                tbStatusLabel.Foreground = Brushes.Orange;
             });
 
             worker.OnAutoFarmingResumed += () => Dispatcher.UIThread.Post(() =>
@@ -223,12 +280,12 @@ namespace steamHoursLinux
                 loginBtn.IsEnabled = false;
                 stopBtn.IsEnabled = true;
 
-                statusLabel.Text = "● ФАРМИНГ АКТИВЕН";
-                statusLabel.Foreground = accentGreen;
+                tbStatusLabel.Text = currentLang == "en" ? "● FARMING ACTIVE" : "● ФАРМИНГ АКТИВЕН";
+                tbStatusLabel.Foreground = accentGreen;
                 timerText.Foreground = accentGreen;
                 timerCardPanel.BorderBrush = accentGreen;
 
-                farmingInfoLabel.Text = $"Запущенные игры ({activeFarmingAppIds.Count}): {string.Join(", ", activeFarmingAppIds)}";
+                farmingInfoLabel.Text = currentLang == "en" ? $"Running games ({activeFarmingAppIds.Count}): {string.Join(", ", activeFarmingAppIds)}" : $"Запущенные игры ({activeFarmingAppIds.Count}): {string.Join(", ", activeFarmingAppIds)}";
 
                 StartFarmTimer();
                 RenderGameCards(loadedGames);
@@ -241,7 +298,7 @@ namespace steamHoursLinux
         {
             if (loadedGames == null || loadedGames.Count == 0) return;
 
-            string query = searchBox.Text?.Trim().ToLower() ?? "";
+            string query = tbSearchBox.Text?.Trim().ToLower() ?? "";
 
             if (string.IsNullOrEmpty(query))
             {
@@ -269,7 +326,7 @@ namespace steamHoursLinux
             {
                 gamesScrollViewer.Content = new TextBlock
                 {
-                    Text = "Игры не найдены.",
+                    Text = renderGameCardsText,
                     Margin = new Avalonia.Thickness(15),
                     TextAlignment = Avalonia.Media.TextAlignment.Center,
                     HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
@@ -333,7 +390,7 @@ namespace steamHoursLinux
                 {
                     var statusBadge = new TextBlock
                     {
-                        Text = "▶ ФАРМИТСЯ",
+                        Text = currentLang == "en" ? "▶ FARMING" : "▶ ФАРМИТСЯ",
                         FontSize = 9,
                         FontWeight = FontWeight.Bold,
                         Foreground = accentGreen,
@@ -358,7 +415,7 @@ namespace steamHoursLinux
 
                 var infoText = new TextBlock
                 {
-                    Text = $"⏱ {hours} ч. | ID: {game.AppId}",
+                    Text = currentLang == "en" ? $"⏱ {hours} h | ID: {game.AppId}" : $"⏱ {hours} ч. | ID: {game.AppId}",
                     FontWeight = FontWeight.Bold,
                     FontSize = 10,
                     Foreground = isFarming ? accentGreen : (isSelected ? Brushes.White : accentBlue),
@@ -415,9 +472,9 @@ namespace steamHoursLinux
 
             guardPanel.IsVisible = false;
             loginBtn.IsEnabled = false;
-            Log($"📨 Отправка кода Guard: {code}");
-            statusLabel.Text = "● Проверка кода...";
-            statusLabel.Foreground = Brushes.Yellow;
+            Log(currentLang == "en" ? $"📨 Submitting Guard code: {code}" : $"📨 Отправка кода Guard: {code}");
+            tbStatusLabel.Text = currentLang == "en" ? "● Verifying code..." : "● Проверка кода...";
+            tbStatusLabel.Foreground = Brushes.Yellow;
 
             worker?.SubmitGuardCode(code);
         }
@@ -426,14 +483,14 @@ namespace steamHoursLinux
         {
             guardPanel.IsVisible = false;
             loginBtn.IsEnabled = false;
-            Log("📨 Ожидание подтверждения из мобильного приложения...");
+            Log(currentLang == "en" ? "📨 Awaiting confirmation from the mobile app..." : "📨 Ожидание подтверждения из мобильного приложения...");
         }
 
         private void StartBtn_Click(object? sender, RoutedEventArgs e)
         {
             if (worker == null)
             {
-                Log("❌ Сначала авторизуйтесь!");
+                Log(currentLang == "en" ? "❌ First, please log in!" : "❌ Сначала авторизуйтесь!");
                 return;
             }
 
@@ -441,17 +498,17 @@ namespace steamHoursLinux
 
             if (appIdsToStart.Count == 0)
             {
-                Log("❌ Выберите хотя бы одну игру из списка или введите AppID!");
+                Log(currentLang == "en" ? "❌ Please select at least one game from the list or enter an AppID!" : "❌ Выберите хотя бы одну игру из списка или введите AppID!");
                 return;
             }
 
             if (appIdsToStart.Count > 32)
             {
-                Log("⚠️ Лимит Steam: не более 32 игр одновременно. Запускаются первые 32.");
+                Log(currentLang == "en" ? "⚠️ Steam limit: no more than 32 games at a time. Starting the first 32." : "⚠️ Лимит Steam: не более 32 игр одновременно. Запускаются первые 32.");
                 appIdsToStart = appIdsToStart.Take(32).ToList();
             }
 
-            Log($"▶️ Запуск фарминга для {appIdsToStart.Count} игр: {string.Join(", ", appIdsToStart)}...");
+            Log(currentLang == "en" ? $"▶️ Starting farming for {appIdsToStart.Count} games: {string.Join(", ", appIdsToStart)}" : $"▶️ Запуск фарминга для {appIdsToStart.Count} игр: {string.Join(", ", appIdsToStart)}...");
 
             worker.StartIdling(appIdsToStart);
 
@@ -465,12 +522,12 @@ namespace steamHoursLinux
             loginBtn.IsEnabled = false;
             stopBtn.IsEnabled = true;
 
-            statusLabel.Text = "● ФАРМИНГ АКТИВЕН";
-            statusLabel.Foreground = accentGreen;
+            tbStatusLabel.Text = currentLang == "en" ? "● FARMING ACTIVE" : "● ФАРМИНГ АКТИВЕН";
+            tbStatusLabel.Foreground = accentGreen;
             timerText.Foreground = accentGreen;
             timerCardPanel.BorderBrush = accentGreen;
 
-            farmingInfoLabel.Text = $"Запущенные игры ({activeFarmingAppIds.Count}): {string.Join(", ", activeFarmingAppIds)}";
+            farmingInfoLabel.Text = currentLang == "en" ? $"Farming games ({activeFarmingAppIds.Count}): {string.Join(", ", activeFarmingAppIds)}" : $"Запущенные игры ({activeFarmingAppIds.Count}): {string.Join(", ", activeFarmingAppIds)}";
 
             StartFarmTimer();
             RenderGameCards(loadedGames);
@@ -478,7 +535,7 @@ namespace steamHoursLinux
 
         private void StopBtn_Click(object? sender, RoutedEventArgs e)
         {
-            Log("⏹ Остановка фарминга...");
+            Log(currentLang == "en" ? "⏹ Stopping farming..." : "⏹ Остановка фарминга...");
             worker?.StopIdling();
 
             activeFarmingAppIds.Clear();
@@ -488,12 +545,12 @@ namespace steamHoursLinux
             startBtn.IsEnabled = true;
             stopBtn.IsEnabled = false;
 
-            statusLabel.Text = "● Статус: В сети (Фарм остановлен)";
-            statusLabel.Foreground = accentBlue;
+            tbStatusLabel.Text = currentLang == "en" ? "● Status: Online (Farming stopped)" : "● Статус: В сети (Фарм остановлен)";
+            tbStatusLabel.Foreground = accentBlue;
             timerText.Foreground = accentBlue;
             timerText.Text = "00:00:00";
             timerCardPanel.BorderBrush = borderDefault;
-            farmingInfoLabel.Text = "Фарминг не запущен";
+            farmingInfoLabel.Text = currentLang == "en" ? "Farming not active" : "Фарминг не запущен";
 
             RenderGameCards(loadedGames);
         }
@@ -528,9 +585,9 @@ namespace steamHoursLinux
 
                 List<string> parts = new List<string>();
 
-                if (months > 0) parts.Add($"{months} мес.");
-                if (weeks > 0) parts.Add($"{weeks} нед.");
-                if (days > 0) parts.Add($"{days} д.");
+                if (months > 0) parts.Add(currentLang == "en" ? $"{months} mo." : $"{months} мес.");
+                if (weeks > 0) parts.Add(currentLang == "en" ? $"{weeks} w." : $"{weeks} нед.");
+                if (days > 0) parts.Add(currentLang == "en" ? $"{days} d." : $"{days} д.");
 
                 string timeFormatted = $"{remainingSpan.Hours:D2}:{remainingSpan.Minutes:D2}:{remainingSpan.Seconds:D2}";
                 parts.Add(timeFormatted);

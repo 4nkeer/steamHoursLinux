@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -24,13 +25,14 @@ namespace steamHoursLinux
 
     internal class SteamLibraryLoader
     {
+        string currentLang = "ru";
         private static readonly HttpClient httpClient = new HttpClient();
 
         public event Action<string> OnLogMessage;
-
-        /// <summary>
-        /// Загрузка библиотеки игр пользователя через Steam Web API
-        /// </summary>
+        public SteamLibraryLoader (string lang)
+        {
+            this.currentLang = lang;
+        }
         public async Task<List<SteamGameInfo>> GetOwnedGamesAsync(ulong steamId64, string accessToken)
         {
             if (steamId64 == 0 || string.IsNullOrEmpty(accessToken))
@@ -41,9 +43,8 @@ namespace steamHoursLinux
 
             try
             {
-                Log("📚 Загрузка библиотеки игр...");
+                Log(currentLang == "en" ? "📚 Loading game library..." : "📚 Загрузка библиотеки игр...");
 
-                // Формируем запрос к Web API Steam для получения списка игр
                 string url = $"https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?access_token={accessToken}&steamid={steamId64}&include_appinfo=true&include_played_free_games=true";
 
                 HttpResponseMessage response = await httpClient.GetAsync(url).ConfigureAwait(false);
@@ -58,16 +59,16 @@ namespace steamHoursLinux
                         responseElem.TryGetProperty("games", out var gamesElem))
                     {
                         var games = JsonSerializer.Deserialize<List<SteamGameInfo>>(gamesElem.GetRawText());
-                        Log($"✅ Успешно загружено игр: {games?.Count ?? 0}");
+                        Log(currentLang == "en" ? $"✅ Successfully loaded games: {games?.Count ?? 0}" : $"✅ Успешно загружено игр: {games?.Count ?? 0}");
                         return games ?? new List<SteamGameInfo>();
                     }
                 }
 
-                Log("⚠️ В ответе Steam API не найден список игр (возможно, профиль скрыт).");
+                Log(currentLang == "en" ? "⚠️ Game list not found in Steam API response (profile might be hidden)." : "⚠️ В ответе Steam API не найден список игр (возможно, профиль скрыт).");
             }
             catch (Exception ex)
             {
-                Log($"❌ Ошибка при загрузке библиотеки игр: {ex.Message}");
+                Log(currentLang == "en" ? $"❌ Error loading game library: {ex.Message}" : $"❌ Ошибка при загрузке библиотеки игр: {ex.Message}");
             }
 
             return new List<SteamGameInfo>();

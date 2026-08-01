@@ -13,6 +13,7 @@ namespace steamHoursLinux
     internal class SteamWorker : IDisposable
     {
         public event Action<string>? OnAvatarHashReceived;
+        string currentLang = string.Empty;
         public List<uint> CurrentFarmingAppIds => currentFarmingAppIds;
         public event Action OnAutoFarmingResumed;
         private SteamClient steamClient;
@@ -30,7 +31,6 @@ namespace steamHoursLinux
         private bool isLoggedOn = false;
         private bool isReconnecting = false;
 
-        // Флаг: должен ли бот возобновить фарм после того, как освободится аккаунт
         private bool shouldResumeIdling = false;
 
         public List<SteamGameInfo> UserGames { get; private set; } = new List<SteamGameInfo>();
@@ -44,16 +44,17 @@ namespace steamHoursLinux
         private Thread workerThread;
         private ConcurrentQueue<Action> actionQueue = new ConcurrentQueue<Action>();
 
-        public SteamWorker(string login, string pass, uint defaultAppId)
+        public SteamWorker(string login, string pass, uint defaultAppId, string lang)
         {
+            currentLang = lang;
             if (defaultAppId > 0)
                 currentFarmingAppIds.Add(defaultAppId);
 
-            this.authenticator = new SteamAuthenticator(login, pass);
+            this.authenticator = new SteamAuthenticator(login, pass, lang);
             this.authenticator.OnLogMessage += message => Log(message);
             this.authenticator.OnGuardRequired += () => OnGuardRequired?.Invoke();
 
-            this.libraryLoader = new SteamLibraryLoader();
+            this.libraryLoader = new SteamLibraryLoader(lang);
             this.libraryLoader.OnLogMessage += message => Log(message);
         }
 
@@ -120,7 +121,7 @@ namespace steamHoursLinux
 
                     while (actionQueue.TryDequeue(out var act))
                     {
-                        try { act(); } catch (Exception ex) { Log($"⚠️ Ошибка в action: {ex.Message}"); }
+                        try { act(); } catch (Exception ex) { Log(currentLang == "en" ? $"⚠️ Error in action: {ex.Message}" : $"⚠️ Ошибка в action: {ex.Message}"); }
                     }
 
                     Thread.Sleep(10);
@@ -130,7 +131,7 @@ namespace steamHoursLinux
             }
             catch (Exception ex)
             {
-                Log($"❌ Ошибка в основном потоке: {ex.Message}");
+                Log(currentLang == "en" ? $"❌ Error in main thread: {ex.Message}" : $"❌ Ошибка в основном потоке: {ex.Message}");
                 OnLoginFailed?.Invoke(ex.Message);
             }
         }
@@ -149,21 +150,20 @@ namespace steamHoursLinux
                 manager.Subscribe<SteamUser.LoggedOnCallback>(OnLoggedOn);
                 manager.Subscribe<SteamUser.LoggedOffCallback>(OnLoggedOff);
 
-                // Подписываемся на обновление списка друзей/профиля, чтобы гарантированно поймать аватар
                 manager.Subscribe<SteamFriends.FriendsListCallback>(OnFriendsList);
 
-                Log("🔌 Подключение к Steam...");
+                Log(currentLang == "en" ? "🔌 Connecting to Steam..." : "🔌 Подключение к Steam...");
                 steamClient.Connect();
             }
             catch (Exception ex)
             {
-                Log($"❌ Ошибка создания клиента: {ex.Message}");
+                Log(currentLang == "en" ? $"❌ Error creating client: {ex.Message}" : $"❌ Ошибка создания клиента: {ex.Message}");
             }
         }
 
         private async void OnConnected(SteamClient.ConnectedCallback callback)
         {
-            Log("✅ Подключено к Steam");
+            Log(currentLang == "en" ? "✅ Connected to Steam" : "✅ Подключено к Steam");
 
             if (authenticator.IsAuthInProgress || isLoggedOn)
                 return;
@@ -184,10 +184,9 @@ namespace steamHoursLinux
 
         private async void OnLoggedOn(SteamUser.LoggedOnCallback callback)
         {
-            // Если мы зашли, а Steam говорит, что сессия занята другим ПК (вы играете)
             if (callback.Result == EResult.LoggedInElsewhere)
             {
-                Log("🎮 Обнаружена ваша игра на ПК. Бот ждет завершения сессии...");
+                Log(currentLang == "en" ? "🎮 Another instance of the application is running. Waiting for session to end..." : "🎮 Обнаружена ваша игра на ПК. Бот ждет завершения сессии...");
                 isLoggedOn = false;
                 ScheduleReconnectAfterKick();
                 return;
@@ -195,7 +194,7 @@ namespace steamHoursLinux
 
             if (callback.Result == EResult.AccessDenied || callback.Result == EResult.InvalidPassword || callback.Result == EResult.Expired)
             {
-                Log($"⚠️ Не удалось войти по токену ({callback.Result}). Очищаем токены...");
+                Log(currentLang == "en" ? $"⚠️ Failed to login with token ({callback.Result}). Clearing tokens..." : $"⚠️ Не удалось войти по токену ({callback.Result}). Очищаем токены...");
                 authenticator.ClearTokens();
 
                 if (steamClient != null && steamClient.IsConnected)
@@ -207,19 +206,19 @@ namespace steamHoursLinux
 
             if (callback.Result == EResult.RateLimitExceeded)
             {
-                Log("⏳ Лимит запросов превышен. Ожидание перед повторной попыткой...");
+                Log(currentLang == "en" ? "⏳ Rate limit exceeded. Waiting before retry..." : "⏳ Лимит запросов превышен. Ожидание перед повторной попыткой...");
                 ScheduleReconnectAfterKick();
                 return;
             }
 
             if (callback.Result != EResult.OK)
             {
-                Log($"❌ Ошибка входа: {callback.Result}");
-                OnLoginFailed?.Invoke($"Ошибка: {callback.Result}");
+                Log(currentLang == "en" ? $"❌ Error logging in: {callback.Result}" : $"❌ Ошибка входа: {callback.Result}");
+                OnLoginFailed?.Invoke(currentLang == "en" ? $"Error: {callback.Result}" : $"Ошибка: {callback.Result}");
                 return;
             }
 
-            Log($"✅ Успешный вход в аккаунт! SteamID: {steamClient.SteamID}");
+            Log(currentLang == "en" ? $"✅ Successful login! SteamID: {steamClient.SteamID}" : $"✅ Успешный вход в аккаунт! SteamID: {steamClient.SteamID}");
 
             isLoggedOn = true;
             authenticator.CurrentSteamId = steamClient.SteamID;
@@ -230,22 +229,21 @@ namespace steamHoursLinux
                 try
                 {
                     steamFriends.SetPersonaState(EPersonaState.Online);
-                    Log("🟢 Статус: В сети");
+                    Log(currentLang == "en" ? "🟢 Status: Online" : "🟢 Статус: В сети");
                 }
                 catch { }
             }
             _ = Task.Run(async () =>
             {
-                await Task.Delay(1500); // Даем секунду-полторы на инициализацию сеанса связи
+                await Task.Delay(1500);
                 FetchAndSendAvatar();
             });
             _ = LoadUserLibraryAsync();
             OnLoginSuccess?.Invoke();
 
-            // Если бот должен фармить (была активна задача фарминга до этого)
             if (shouldResumeIdling && currentFarmingAppIds.Count > 0)
             {
-                Log($"🚀 Вы вышли из игры! Автоматическое возобновление фарма для {currentFarmingAppIds.Count} игр...");
+                Log(currentLang == "en" ? $"🚀 You have logged out of the game! Automatically resuming farming for {currentFarmingAppIds.Count} games..." : $"🚀 Вы вышли из игры! Автоматическое возобновление фарма для {currentFarmingAppIds.Count} игр...");
                 StartIdling(currentFarmingAppIds);
                 OnAutoFarmingResumed?.Invoke();
             }
@@ -262,19 +260,18 @@ namespace steamHoursLinux
                 if (avatarHashBytes != null && avatarHashBytes.Length > 0 && !avatarHashBytes.All(b => b == 0))
                 {
                     avatarHash = BitConverter.ToString(avatarHashBytes).Replace("-", "").ToLowerInvariant();
-                    Log($"🖼 Хэш аватара успешно получен: {avatarHash}");
+                    Log(currentLang == "en" ? $"🖼 Avatar hash successfully received: {avatarHash}" : $"🖼 Хэш аватара успешно получен: {avatarHash}");
                 }
                 else
                 {
-                    Log("⚠️ Хэш аватара пустой, будет использован дефолтный.");
+                    Log(currentLang == "en" ? "⚠️ Avatar hash is empty, using default." : "⚠️ Хэш аватара пустой, будет использован дефолтный.");
                 }
 
-                // Вызываем событие, которое поймает MainWindow
                 OnAvatarHashReceived?.Invoke(avatarHash);
             }
             catch (Exception ex)
             {
-                Log($"⚠️ Ошибка при запросе аватара: {ex.Message}");
+                Log(currentLang == "en" ? $"⚠️ Error occurred while fetching avatar: {ex.Message}" : $"⚠️ Ошибка при запросе аватара: {ex.Message}");
                 OnAvatarHashReceived?.Invoke(string.Empty);
             }
         }
@@ -284,7 +281,6 @@ namespace steamHoursLinux
             {
                 if (steamClient?.SteamID == null) return;
 
-                // Запрашиваем аватар для своего SteamID, когда данные от сети получены
                 byte[] avatarHashBytes = steamFriends.GetFriendAvatar(steamClient.SteamID);
                 string avatarHash = string.Empty;
 
@@ -300,7 +296,7 @@ namespace steamHoursLinux
             }
             catch (Exception ex)
             {
-                Log($"⚠️ Ошибка получения аватара: {ex.Message}");
+                Log(currentLang == "en" ? $"⚠️ Error occurred while fetching avatar: {ex.Message}" : $"⚠️ Ошибка получения аватара: {ex.Message}");
             }
         }
 
@@ -335,7 +331,7 @@ namespace steamHoursLinux
             steamClient.Send(gamesPlayed);
             isGameRunning = true;
             StartKeepAlive();
-            Log($"🎮 Накрутка часов запущена для игр: {string.Join(", ", currentFarmingAppIds)}");
+            Log(currentLang == "en" ? $"🎮 Idling started for games: {string.Join(", ", currentFarmingAppIds)}" : $"🎮 Накрутка часов запущена для игр: {string.Join(", ", currentFarmingAppIds)}");
         }
 
         public void StopIdling()
@@ -351,11 +347,11 @@ namespace steamHoursLinux
                     var msg = new ClientMsgProtobuf<CMsgClientGamesPlayed>(EMsg.ClientGamesPlayed);
                     LoadUserLibraryAsync();
                     steamClient.Send(msg);
-                    Log("⏹ Фарм часов остановлен.");
+                    Log(currentLang == "en" ? "⏹ Farming stopped." : "⏹ Фарм часов остановлен.");
                 }
                 catch (Exception ex)
                 {
-                    Log($"⚠️ Ошибка при остановке фарма: {ex.Message}");
+                    Log(currentLang == "en" ? $"⚠️ Error occurred while stopping farming: {ex.Message}" : $"⚠️ Ошибка при остановке фарма: {ex.Message}");
                 }
             }
         }
@@ -393,13 +389,13 @@ namespace steamHoursLinux
             }
             catch (Exception ex)
             {
-                Log($"⚠️ Ошибка отправки keepalive: {ex.Message}");
+                Log(currentLang == "en" ? $"⚠️ Error occurred while sending keepalive: {ex.Message}" : $"⚠️ Ошибка отправки keepalive: {ex.Message}");
             }
         }
 
         private async void OnDisconnected(SteamClient.DisconnectedCallback callback)
         {
-            Log("⚠️ Отключено от Steam");
+            Log(currentLang == "en" ? "⚠️ Disconnected from Steam" : "⚠️ Отключено от Steam");
             isGameRunning = false;
             isLoggedOn = false;
             keepAliveTimer?.Dispose();
@@ -417,14 +413,14 @@ namespace steamHoursLinux
 
         private void OnLoggedOff(SteamUser.LoggedOffCallback callback)
         {
-            Log($"👋 Сессия завершена со стороны Steam. Причина: {callback.Result}");
+            Log(currentLang == "en" ? $"👋 Session ended by Steam. Reason: {callback.Result}" : $"👋 Сессия завершена со стороны Steam. Причина: {callback.Result}");
             isGameRunning = false;
             isLoggedOn = false;
             keepAliveTimer?.Dispose();
 
             if (callback.Result == EResult.LoggedInElsewhere || callback.Result == EResult.LogonSessionReplaced)
             {
-                Log("🕹 Вы запустили игру на ПК. Бот ждет окончания вашей сессии...");
+                Log(currentLang == "en" ? "🕹 You have started a game on another PC. The bot will wait for your session to end..." : "🕹 Вы запустили игру на ПК. Бот ждет окончания вашей сессии...");
                 shouldResumeIdling = true;
                 ScheduleReconnectAfterKick();
             }
