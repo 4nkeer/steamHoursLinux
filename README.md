@@ -6,25 +6,23 @@
 
 ## 🖥 Поддерживаемые системы
 
-Проект кроссплатформенный и тестировался на следующих ОС:
+Проект кроссплатформенный и тестировался на следующих операционных системах:
 * **Linux** (включая дистрибутивы для **Raspberry Pi** с окружением X11 / Wayland)
 * **Windows 11** (x64)
 
 ---
 
-# Запуск на Windows
+## 🪟 Запуск на Windows
 
-1. Скачать репозиторий
-2. Перейти в папку **net 10.0** по пути: ***\steamHoursLinux\steamHoursLinux\bin\Release\net10.0***
-3. Запустить **steamHoursLinux.exe**
-
-# Запуск на Linux
-
-1. Скачать репозиторий git clone https://github.com/4nkeer/steamHoursLinux.git
-2. Запустить steamHoursLinux.dll (teamHoursLinux/steamHoursLinux/bin/Release/net10.0) командой dotnet steamHoursLinux.dll
+1. Скачайте или клонируйте репозиторий проекта.
+2. Перейдите в папку сборки по пути: 
+   `\steamHoursLinux\steamHoursLinux\bin\Release\net10.0`
+3. Запустите исполняемый файл **`steamHoursLinux.exe`**.
 
 ---
-# Что дальше?
 
-* Возможность открывать **достижения**
-* Внедрение **английского языка**
+## 🐧 Запуск на Linux
+
+1. Клонируйте репозиторий с помощью терминала:
+   ```bash
+   git clone https://github.com/4nkeer/steamHoursLinux.git
