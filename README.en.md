@@ -38,4 +38,4 @@ The project is cross-platform and has been tested on:
 
 * Ability to unlock **achievements**
 
-* Introduction **of the English language**
+✅ Introduction **of the English language**
