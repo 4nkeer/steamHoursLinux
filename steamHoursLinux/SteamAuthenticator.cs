@@ -33,7 +33,7 @@ namespace steamHoursLinux
             Directory.CreateDirectory(tokensDirectory);
 
          
-            this.tokenFilePath = Path.Combine(tokensDirectory, $"tokens_{username}.txt");
+            this.tokenFilePath = Path.Join(tokensDirectory, $"tokens_{username}.txt");
         }
 
         public void LoginWithToken(SteamUser steamUser, SteamClient steamClient, bool isLoggedOn)
