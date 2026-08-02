@@ -29,7 +29,7 @@ namespace steamHoursLinux
             this.password = password;
             this.currentLang = lang;
            
-            string tokensDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config");
+            string tokensDirectory = Path.Join(AppDomain.CurrentDomain.BaseDirectory, "config");
             Directory.CreateDirectory(tokensDirectory);
 
          
