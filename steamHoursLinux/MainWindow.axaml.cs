@@ -24,7 +24,6 @@ namespace steamHoursLinux
     {
         string avatarHash = string.Empty;
         string avatarUrl = string.Empty;
-        string renderGameCardsText = string.Empty;
         string currentLang = "ru";
         private SteamWorker? worker;
         private List<SteamGameInfo> loadedGames = new List<SteamGameInfo>();
@@ -178,13 +177,11 @@ namespace steamHoursLinux
                 tbTemp.Text = "In the future, you can place a list of achievements for the selected game here.";
                 tbSearchBox.Text = "🔍 Search by name or AppID...";
                 logBox.Text = "There are no events. I'm waiting for your actions...\n";
-                renderGameCardsText = "No games found.";
                 tbLogHeader.Text = "Event log";
                 tbStatusLabel.Text = "● Status: Waiting to enter";
             }
             else
             {
-                renderGameCardsText = "Игры не найдены.";
                 logBox.Text = "Событий нет. Жду твоих действий...\n";
             }
            
@@ -326,7 +323,7 @@ namespace steamHoursLinux
             {
                 gamesScrollViewer.Content = new TextBlock
                 {
-                    Text = renderGameCardsText,
+                    Text = currentLang == "en" ? "No games found." : "Игры не найдены.",
                     Margin = new Avalonia.Thickness(15),
                     TextAlignment = Avalonia.Media.TextAlignment.Center,
                     HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
