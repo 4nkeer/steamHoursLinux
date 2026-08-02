@@ -34,6 +34,7 @@ namespace steamHoursLinux
         private bool shouldResumeIdling = false;
 
         public List<SteamGameInfo> UserGames { get; private set; } = new List<SteamGameInfo>();
+        public ulong SteamID => steamClient?.SteamID?.ConvertToUInt64() ?? 0;
 
         public event Action<string> OnLogMessage;
         public event Action OnLoginSuccess;

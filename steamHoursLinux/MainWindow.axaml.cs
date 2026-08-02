@@ -3,6 +3,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
+using SteamKit2;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,6 +23,7 @@ namespace steamHoursLinux
 
     public partial class MainWindow : Window
     {
+        bool isDelWebApiKey = false;
         string avatarHash = string.Empty;
         string avatarUrl = string.Empty;
         string currentLang = "ru";
@@ -51,12 +53,74 @@ namespace steamHoursLinux
         private static readonly string configDirectory = Path.Join(AppDomain.CurrentDomain.BaseDirectory, "config");
         private static readonly string configPath = Path.Join(configDirectory, "config.json");
         private readonly string langFilePath = Path.Join(AppDomain.CurrentDomain.BaseDirectory, "language.txt");
+        private readonly string webApiKeyPath = Path.Join(configDirectory, "webapi.txt");
+        private readonly Dictionary<string, Dictionary<string, string>> localizedText = new()
+        {
+            ["ru"] = new()
+            {
+                ["Login"] = "Логин",
+                ["Password"] = "Пароль",
+                ["AppId"] = "AppID (необязательно)",
+                ["Remember"] = "Запомнить меня",
+                ["SignIn"] = "✅ Войти",
+                ["Start"] = "⏩ Запустить фарм",
+                ["Stop"] = "⏹ Остановить фарм",
+                ["Auth"] = "АВТОРИЗАЦИЯ",
+                ["Manage"] = "УПРАВЛЕНИЕ ФАРМОМ",
+                ["Timer"] = "ТАЙМЕР ФАРМА",
+                ["FarmNotStarted"] = "Фарминг не запущен",
+                ["TabLibrary"] = "🎮 Библиотека игр",
+                ["TabAch"] = "🏆 Достижения",
+                ["Search"] = "🔍 Поиск по названию или AppID...",
+                ["LogWait"] = "Событий нет. Жду твоих действий...\n",
+                ["LogHeader"] = "Лог событий",
+                ["StatusWait"] = "● Статус: Ожидание входа",
+                ["SettingsHeader"] = "Настройки приложения",
+                ["TextLanguageInterface"] = "ЯЗЫК ИНТЕРФЕЙСА",
+                ["TextWebApiKey"] = "WEB API КЛЮЧ",
+                ["CloseAndSaveButton"] = "Сохранить и закрыть",
+                ["WarningTitle"] = "Предупреждение",
+                ["WarningMessage"] = "Для действий с достижениями нужен Web API ключ. Получить его можно на сайте Steam. После чего вставить в настройках приложения.",
+                ["CloseInfoButton"] = "Закрыть",
+                ["SettingsButton"] = "Настройки",
+                ["SearchGameAchievement"] = "🔍 Поиск игры по названию или AppID..."
+            },
+            ["en"] = new()
+            {
+                ["Login"] = "Login",
+                ["Password"] = "Password",
+                ["AppId"] = "AppID (optional)",
+                ["Remember"] = "Remember me",
+                ["SignIn"] = "✅ Sign In",
+                ["Start"] = "⏩ Start Farming",
+                ["Stop"] = "⏹ Stop Farming",
+                ["Auth"] = "AUTHORIZATION",
+                ["Manage"] = "FARM MANAGEMENT",
+                ["Timer"] = "FARM TIMER",
+                ["FarmNotStarted"] = "Farming not started",
+                ["TabLibrary"] = "🎮 Library games",
+                ["TabAch"] = "🏆 Achievements",
+                ["Search"] = "🔍 Search by name or AppID...",
+                ["LogWait"] = "There are no events. I'm waiting for your actions...\n",
+                ["LogHeader"] = "Event log",
+                ["StatusWait"] = "● Status: Waiting to enter",
+                ["SettingsHeader"] = "Application settings",
+                ["TextLanguageInterface"] = "INTERFACE LANGUAGE",
+                ["TextWebApiKey"] = "WEB API KEY",
+                ["CloseAndSaveButton"] = "Save and close",
+                ["WarningTitle"] = "Warning",
+                ["WarningMessage"] = "To work with achievements, you need a Web API key. You can get it on the Steam website. After that, insert it into the application settings.",
+                ["CloseInfoButton"] = "Close",
+                ["SettingsButton"] = "Settings",
+                ["SearchGameAchievement"] = "🔍 Search for a game by name or AppID..."
+            }
+        };
         public MainWindow()
         {
             InitializeComponent();
             CheckLanguageFile();
             LoadConfig();
-            
+
             logBox.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center;
             logBox.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center;
             logBox.TextAlignment = Avalonia.Media.TextAlignment.Center;
@@ -97,20 +161,20 @@ namespace steamHoursLinux
             }
         }
 
-      
+
         private void SaveConfig()
         {
             try
             {
                 bool rememberMe = rememberMeCheckBox.IsChecked ?? false;
 
-                
+
                 if (rememberMe)
                 {
                     Directory.CreateDirectory(configDirectory);
                 }
 
-               
+
                 if (Directory.Exists(configDirectory))
                 {
                     var config = new AppConfig
@@ -159,32 +223,34 @@ namespace steamHoursLinux
         private void ApplyLanguage(string lang)
         {
             currentLang = lang;
-            if (lang == "en")
-            {
-                loginBox.PlaceholderText = "Login";
-                passwordBox.PlaceholderText = "Password";
-                appIdBox.PlaceholderText = "AppID (optional)";
-                rememberMeCheckBox.Content = "Remember me";
-                loginBtn.Content = "✅ Sign In";
-                startBtn.Content = "▶ Start Farming";
-                stopBtn.Content = "⏹ Stop Farming";
-                tbAuth.Text = "AUTHORIZATION";
-                tbManagementFarm.Text = "FARM MANAGEMENT";
-                tbTimerFarm.Text = "FARM TIMER";
-                farmingInfoLabel.Text = "Farming not started";
-                tiLibrary.SetValue(TabItem.HeaderProperty, "🎮 Library games");
-                tiAchievements.SetValue(TabItem.HeaderProperty, "🏆 Achievements");
-                tbTemp.Text = "In the future, you can place a list of achievements for the selected game here.";
-                tbSearchBox.Text = "🔍 Search by name or AppID...";
-                logBox.Text = "There are no events. I'm waiting for your actions...\n";
-                tbLogHeader.Text = "Event log";
-                tbStatusLabel.Text = "● Status: Waiting to enter";
-            }
-            else
-            {
-                logBox.Text = "Событий нет. Жду твоих действий...\n";
-            }
-           
+            var t = localizedText[lang]; // Берем нужный словарь по коду языка
+
+            loginBox.PlaceholderText = t["Login"];
+            passwordBox.PlaceholderText = t["Password"];
+            appIdBox.PlaceholderText = t["AppId"];
+            rememberMeCheckBox.Content = t["Remember"];
+            loginBtn.Content = t["SignIn"];
+            startBtn.Content = t["Start"];
+            stopBtn.Content = t["Stop"];
+            tbAuth.Text = t["Auth"];
+            tbManagementFarm.Text = t["Manage"];
+            tbTimerFarm.Text = t["Timer"];
+            farmingInfoLabel.Text = t["FarmNotStarted"];
+            tiLibrary.SetValue(TabItem.HeaderProperty, t["TabLibrary"]);
+            tiAchievements.SetValue(TabItem.HeaderProperty, "🏆 " + t["TabAch"].Replace("🏆 ", ""));
+            tbSearchBox.PlaceholderText = t["Search"];
+            logBox.Text = t["LogWait"];
+            tbLogHeader.Text = t["LogHeader"];
+            tbStatusLabel.Text = t["StatusWait"];
+            tbSettingsHeader.Text = t["SettingsHeader"];
+            tbLanguageInterface.Text = t["TextLanguageInterface"];
+            tbWebApiKey.Text = t["TextWebApiKey"];
+            closeAndSaveSettingsBtn.SetValue(Button.ContentProperty, t["CloseAndSaveButton"]);
+            warningTitle.Text = t["WarningTitle"];
+            warningMessage.Text = t["WarningMessage"];
+            closeInfoBtn.SetValue(Button.ContentProperty, t["CloseInfoButton"]);
+            tbSettings.Text = t["SettingsButton"];
+            tbSearchGameAchievementsBox.PlaceholderText = t["SearchGameAchievement"];
         }
         private void LoginBtn_Click(object? sender, RoutedEventArgs e)
         {
@@ -195,7 +261,7 @@ namespace steamHoursLinux
                 return;
             }
 
-            
+
             SaveConfig();
 
             var initialAppIds = ParseAppIdsFromInput();
@@ -237,9 +303,9 @@ namespace steamHoursLinux
 
             worker.OnLibraryLoaded += (games) => Dispatcher.UIThread.Post(() =>
             {
-               
+
                 loadedGames = games ?? new List<SteamGameInfo>();
-              
+
                 RenderGameCards(loadedGames);
             });
 
@@ -311,17 +377,19 @@ namespace steamHoursLinux
             RenderGameCards(filteredGames);
         }
 
-        private void RenderGameCards(List<SteamGameInfo> games)
+        private void RenderGameCards(List<SteamGameInfo> games, bool isAchievements = false)
         {
-            gamesFlowPanel.Children.Clear();
+            var targetPanel = isAchievements ? gamesAchievementsFlowPanel : gamesFlowPanel;
 
-            if (gamesScrollViewer.Content != gamesFlowPanel)
-            {
-                gamesScrollViewer.Content = gamesFlowPanel;
-            }
+            // Выбираем правильный скроллер для текущего режима
+            var currentScrollViewer = isAchievements ? gamesScrollAchievementsViewer : gamesScrollViewer;
+
+            // Защита от вызова до инициализации компонентов в XAML
+            if (targetPanel == null || currentScrollViewer == null) return;
+
             if (games == null || games.Count == 0)
             {
-                gamesScrollViewer.Content = new TextBlock
+                currentScrollViewer.Content = new TextBlock
                 {
                     Text = currentLang == "en" ? "No games found." : "Игры не найдены.",
                     Margin = new Avalonia.Thickness(15),
@@ -336,11 +404,17 @@ namespace steamHoursLinux
                 return;
             }
 
+            // Возвращаем нужную панель в её собственный скроллер
+            currentScrollViewer.Content = targetPanel;
+            targetPanel.Children.Clear();
+
             foreach (var game in games)
             {
                 double hours = Math.Round(game.PlaytimeForever / 60.0, 1);
                 bool isFarming = activeFarmingAppIds.Contains(game.AppId);
-                bool isSelected = selectedAppIds.Contains(game.AppId);
+
+                // В достижениях карточка больше не подсвечивается как выбранная
+                bool isSelected = !isAchievements && selectedAppIds.Contains(game.AppId);
 
                 IBrush cardBg = isFarming ? SolidColorBrush.Parse("#1E382B") : (isSelected ? bgCardSelected : bgCardDefault);
                 IBrush borderBrush = isFarming ? accentGreen : (isSelected ? Brushes.White : Brushes.Transparent);
@@ -383,7 +457,7 @@ namespace steamHoursLinux
 
                 var titlePanel = new StackPanel();
 
-                if (isFarming)
+                if (isFarming && !isAchievements)
                 {
                     var statusBadge = new TextBlock
                     {
@@ -410,12 +484,27 @@ namespace steamHoursLinux
                 Grid.SetRow(titlePanel, 0);
                 Grid.SetColumn(titlePanel, 1);
 
+                string infoTextContent;
+                if (isAchievements)
+                {
+                    int unlockedAch = SteamUnlockAchievements.GetUnlockedCount(game.AppId);
+                    int totalAch = SteamUnlockAchievements.GetTotalCount(game.AppId);
+
+                    infoTextContent = currentLang == "en"
+                        ? $"🏆 {unlockedAch}/{totalAch} achievements"
+                        : $"🏆 {unlockedAch}/{totalAch} достижений";
+                }
+                else
+                {
+                    infoTextContent = currentLang == "en" ? $"⏱ {hours} h | ID: {game.AppId}" : $"⏱ {hours} ч. | ID: {game.AppId}";
+                }
+
                 var infoText = new TextBlock
                 {
-                    Text = currentLang == "en" ? $"⏱ {hours} h | ID: {game.AppId}" : $"⏱ {hours} ч. | ID: {game.AppId}",
+                    Text = infoTextContent,
                     FontWeight = FontWeight.Bold,
                     FontSize = 10,
-                    Foreground = isFarming ? accentGreen : (isSelected ? Brushes.White : accentBlue),
+                    Foreground = isFarming && !isAchievements ? accentGreen : (isSelected ? Brushes.White : accentBlue),
                     Margin = new Avalonia.Thickness(0, 5, 0, 0)
                 };
                 Grid.SetRow(infoText, 1);
@@ -427,25 +516,137 @@ namespace steamHoursLinux
                 grid.Children.Add(infoText);
                 card.Child = grid;
 
-                card.PointerPressed += (s, e) =>
+                card.PointerPressed += async (s, e) =>
                 {
-                    if (selectedAppIds.Contains(game.AppId))
+                    if (isAchievements)
                     {
-                        selectedAppIds.Remove(game.AppId);
+                        await ShowGameAchievementsDetail(game.AppId, game.Name);
                     }
                     else
                     {
-                        selectedAppIds.Add(game.AppId);
-                    }
+                        if (selectedAppIds.Contains(game.AppId))
+                        {
+                            selectedAppIds.Remove(game.AppId);
+                        }
+                        else
+                        {
+                            selectedAppIds.Add(game.AppId);
+                        }
 
-                    appIdBox.Text = string.Join(", ", selectedAppIds);
-                    RenderGameCards(loadedGames);
+                        appIdBox.Text = string.Join(", ", selectedAppIds);
+
+                        // Перерисовываем обе панели, чтобы стили обновились мгновенно
+                        RenderGameCards(loadedGames, false);
+                        RenderGameCards(loadedGames, true);
+                    }
                 };
 
-                gamesFlowPanel.Children.Add(card);
+                targetPanel.Children.Add(card);
             }
-        }
 
+            targetPanel.InvalidateMeasure();
+            targetPanel.InvalidateVisual();
+        }
+        private async Task ShowGameAchievementsDetail(uint appId, string gameName)
+        {
+            var stats = SteamUnlockAchievements.GetStatsForGame(appId);
+
+            if (achievementsFlowPanel == null) return;
+
+            achievementsFlowPanel.Children.Clear();
+
+            if (stats.Achievements == null || stats.Achievements.Count == 0)
+            {
+                achievementsFlowPanel.Children.Add(new TextBlock
+                {
+                    Text = currentLang == "en" ? "No achievements found for this game." : "У этой игры нет достижений.",
+                    Foreground = Brushes.Gray,
+                    Margin = new Avalonia.Thickness(5)
+                });
+            }
+            else
+            {
+                // Создаем карточки достижений с иконками
+                foreach (var ach in stats.Achievements)
+                {
+                    var card = new Border
+                    {
+                        Width = 200,
+                        Height = 80,
+                        Margin = new Avalonia.Thickness(5),
+                        Background = SolidColorBrush.Parse(ach.IsUnlocked ? "#1E382B" : "#2A313D"),
+                        BorderBrush = ach.IsUnlocked ? SolidColorBrush.Parse("#4CAF50") : Brushes.Transparent,
+                        BorderThickness = new Avalonia.Thickness(ach.IsUnlocked ? 2 : 0),
+                        CornerRadius = new Avalonia.CornerRadius(4)
+                    };
+
+                    var grid = new Grid
+                    {
+                        ColumnDefinitions = ColumnDefinitions.Parse("40,*"),
+                        Margin = new Avalonia.Thickness(6)
+                    };
+
+                    // Иконка достижения
+                    var img = new Image
+                    {
+                        Width = 32,
+                        Height = 32,
+                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
+                    };
+
+                    if (!string.IsNullOrEmpty(ach.IconUrl))
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Achievement Icon URL: {ach.IconUrl}");
+                        // Запускаем асинхронную загрузку, передавая картинку в UI-поток
+                        _ = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                // Если ваш LoadImageAsync возвращает готовый Bitmap или сам присваивает — вызываем его
+                                // Либо используем стандартную логику загрузки через LoadImageAsync:
+                                await LoadImageAsync(ach.IconUrl, img);
+                            }
+                            catch
+                            {
+                                // Игнорируем сетевые ошибки отдельных иконок
+                            }
+                        });
+                    }
+
+                    Grid.SetColumn(img, 0);
+
+                    // Текстовая часть (Название + Статус)
+                    var textBlock = new TextBlock
+                    {
+                        Text = $"{ach.Name}\n{(ach.IsUnlocked ? (currentLang == "en" ? "✅ Unlocked" : "✅ Получено") : (currentLang == "en" ? "🔒 Locked" : "🔒 Заблокировано"))}",
+                        Foreground = Brushes.White,
+                        FontSize = 10,
+                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                        Margin = new Avalonia.Thickness(6, 0, 0, 0),
+                        TextWrapping = TextWrapping.Wrap
+                    };
+
+                    Grid.SetColumn(textBlock, 1);
+
+                    grid.Children.Add(img);
+                    grid.Children.Add(textBlock);
+                    card.Child = grid;
+
+                    achievementsFlowPanel.Children.Add(card);
+                }
+            }
+
+            if (gamesAchievementsFlowPanel != null)
+            {
+                gamesAchievementsFlowPanel.IsVisible = true;
+                RenderGameCards(loadedGames, true);
+            }
+
+            achievementsFlowPanel.IsVisible = true;
+            achievementsFlowPanel.InvalidateMeasure();
+            achievementsFlowPanel.InvalidateVisual();
+        }
         private async Task LoadImageAsync(string url, Image targetImage)
         {
             try
@@ -456,6 +657,86 @@ namespace steamHoursLinux
                 Dispatcher.UIThread.Post(() => targetImage.Source = bitmap);
             }
             catch { }
+        }
+        private void tc_SelectionChanged(object? sender, Avalonia.Controls.SelectionChangedEventArgs e)
+        {
+            if (e.Source is Avalonia.Controls.TabControl tabControl)
+            {
+                if (tabControl.SelectedItem is TabItem selectedTab)
+                {
+                    if (selectedTab.Name == "tiAchievements")
+                    {
+                        if (!System.IO.File.Exists(webApiKeyPath))
+                        {
+                            warningOverlay.IsVisible = true;
+                            tcMain.SelectedItem = tiLibrary;
+                        }
+                        if (loadedGames == null || loadedGames.Count == 0 || worker == null) return;
+
+                        // Показываем текст загрузки через ScrollViewer (заменяем содержимое на время загрузки)
+                        if (gamesScrollAchievementsViewer != null)
+                        {
+                            gamesScrollAchievementsViewer.Content = new TextBlock
+                            {
+                                Text = currentLang == "en" ? "🔄 Loading achievements..." : "🔄 Загрузка достижений...",
+                                Margin = new Avalonia.Thickness(15),
+                                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                                Foreground = Avalonia.Media.Brushes.White,
+                                FontSize = 14
+                            };
+                        }
+
+                        ulong steamId = worker.SteamID;
+                        Log(currentLang == "en" ? "🔄 Loading achievements statistics..." : "🔄 Загрузка статистики достижений...");
+
+                        tabControl.IsEnabled = false;
+
+                        Task.Run(async () =>
+                        {
+                            var tasks = new List<Task>();
+
+                            foreach (var game in loadedGames)
+                            {
+                                var existingStats = SteamUnlockAchievements.GetStatsForGame(game.AppId);
+                                if (existingStats.TotalAchievements > 0) continue;
+
+                                tasks.Add(SteamUnlockAchievements.LoadAchievementsAsync(steamId, game.AppId));
+                            }
+
+                            if (tasks.Count > 0)
+                            {
+                                await Task.WhenAll(tasks);
+                            }
+
+                            Dispatcher.UIThread.Post(() =>
+                            {
+                                tabControl.IsEnabled = true;
+
+                                if (tabControl.SelectedItem is TabItem currentTab && currentTab.Name == "tiAchievements")
+                                {
+                                    // Возвращаем WrapPanel обратно в ScrollViewer перед отрисовкой карточек
+                                    if (gamesScrollAchievementsViewer != null && gamesAchievementsFlowPanel != null)
+                                    {
+                                        gamesScrollAchievementsViewer.Content = gamesAchievementsFlowPanel;
+                                    }
+
+                                    RenderGameCards(loadedGames, true);
+                                }
+                                Log(currentLang == "en" ? "✅ Achievements updated!" : "✅ Достижения обновлены!");
+
+                                var window = Avalonia.VisualTree.VisualExtensions.FindAncestorOfType<Window>(gamesAchievementsFlowPanel);
+                                window?.InvalidateVisual();
+
+                            }, Avalonia.Threading.DispatcherPriority.Render);
+                        });
+                    }
+                    else if (selectedTab.Name == "tiLibrary")
+                    {
+                        RenderGameCards(loadedGames, false);
+                    }
+                }
+            }
         }
 
         private void GuardBtn_Click(object? sender, RoutedEventArgs e)
@@ -551,6 +832,26 @@ namespace steamHoursLinux
 
             RenderGameCards(loadedGames);
         }
+        private void tbSearchGameAchievementsBox_TextChanged(object? sender, TextChangedEventArgs e)
+        {
+            if (loadedGames == null || loadedGames.Count == 0) return;
+
+            string query = tbSearchGameAchievementsBox.Text?.Trim().ToLower() ?? "";
+
+            if (string.IsNullOrEmpty(query))
+            {
+                RenderGameCards(loadedGames, true);
+                return;
+            }
+
+            var filteredGames = loadedGames.Where(g =>
+                (g.Name != null && g.Name.ToLower().Contains(query)) ||
+                g.AppId.ToString().Contains(query)
+            ).ToList();
+
+            RenderGameCards(filteredGames, true);
+        }
+
 
         private void StartFarmTimer()
         {
@@ -635,6 +936,68 @@ namespace steamHoursLinux
                 logBox.Text += $"[{timestamp}] {message}\n";
                 logScrollViewer.ScrollToEnd();
             });
+        }
+
+        private void settingsBtn_Click(object? sender, RoutedEventArgs e)
+        {
+            if (languageComboBox != null)
+            {
+                foreach (ComboBoxItem item in languageComboBox.Items)
+                {
+                    if (item.Tag?.ToString() == currentLang)
+                    {
+                        languageComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+            }
+            if (System.IO.File.Exists(webApiKeyPath))
+            {
+                webApiKeyTextBox.Text = File.ReadAllText(webApiKeyPath).Trim();
+            }
+            settingsOverlayPanel.IsVisible = true;
+        }
+
+        private void closeAndSaveSettingsBtn_Click(object? sender, RoutedEventArgs e)
+        {
+            if (languageComboBox?.SelectedItem is ComboBoxItem selectedItem && selectedItem.Tag is string newLang)
+            {
+
+                if (newLang != currentLang)
+                {
+                    File.WriteAllText(langFilePath, newLang);
+                    ApplyLanguage(newLang);
+
+                }
+            }
+            if (webApiKeyTextBox != null)
+            {
+
+                if (!Directory.Exists(configDirectory))
+                {
+                    Directory.CreateDirectory(configDirectory);
+                }
+
+                File.WriteAllText(webApiKeyPath, webApiKeyTextBox.Text?.Trim() ?? string.Empty);
+            }
+            if (isDelWebApiKey) {
+                File.Delete(webApiKeyPath);
+                isDelWebApiKey = false;
+            }
+            settingsOverlayPanel.IsVisible = false;
+        }
+
+        private void closeInfoBtn_Click(object? sender, RoutedEventArgs e)
+        {
+            warningOverlay.IsVisible = false;
+
+        }
+
+        private void clearWebApiKeyBtn_Click(object? sender, RoutedEventArgs e)
+        {
+            isDelWebApiKey = true;
+            webApiKeyTextBox.Text = string.Empty;
+            
         }
     }
 }
