@@ -51,7 +51,7 @@ namespace steamHoursLinux
         // Общая папка config и путь к config.json в ней
         private static readonly string configDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config");
         private static readonly string configPath = Path.Combine(configDirectory, "config.json");
-        private readonly string langFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "language.txt");
+        private readonly string langFilePath = Path.Join(AppDomain.CurrentDomain.BaseDirectory, "language.txt");
         public MainWindow()
         {
             InitializeComponent();
