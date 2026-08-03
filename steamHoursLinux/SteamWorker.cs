@@ -14,6 +14,7 @@ namespace steamHoursLinux
     {
         public event Action<string>? OnAvatarHashReceived;
         string currentLang = string.Empty;
+        public string Username => authenticator != null ? authenticator.Username : string.Empty;
         public List<uint> CurrentFarmingAppIds => currentFarmingAppIds;
         public event Action OnAutoFarmingResumed;
         private SteamClient steamClient;
@@ -128,7 +129,7 @@ namespace steamHoursLinux
                     Thread.Sleep(10);
                 }
 
-                Log("🛑 Работа остановлена");
+                Log(currentLang == "en" ? "🛑 Work stopped" : "🛑 Работа остановлена");
             }
             catch (Exception ex)
             {

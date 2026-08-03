@@ -83,7 +83,8 @@ namespace steamHoursLinux
                 ["WarningMessage"] = "Для действий с достижениями нужен Web API ключ. Получить его можно на сайте Steam. После чего вставить в настройках приложения.",
                 ["CloseInfoButton"] = "Закрыть",
                 ["SettingsButton"] = "Настройки",
-                ["SearchGameAchievement"] = "🔍 Поиск игры по названию или AppID..."
+                ["SearchGameAchievement"] = "🔍 Поиск игры по названию или AppID...",
+                ["ClearSessionButton"] = "🗑️ Очистить сессию"
             },
             ["en"] = new()
             {
@@ -112,7 +113,8 @@ namespace steamHoursLinux
                 ["WarningMessage"] = "To work with achievements, you need a Web API key. You can get it on the Steam website. After that, insert it into the application settings.",
                 ["CloseInfoButton"] = "Close",
                 ["SettingsButton"] = "Settings",
-                ["SearchGameAchievement"] = "🔍 Search for a game by name or AppID..."
+                ["SearchGameAchievement"] = "🔍 Search for a game by name or AppID...",
+                ["ClearSessionButton"] = "🗑️ Clear session"
             }
         };
         public MainWindow()
@@ -251,6 +253,7 @@ namespace steamHoursLinux
             closeInfoBtn.SetValue(Button.ContentProperty, t["CloseInfoButton"]);
             tbSettings.Text = t["SettingsButton"];
             tbSearchGameAchievementsBox.PlaceholderText = t["SearchGameAchievement"];
+            clearSessionBtn.SetValue(Button.ContentProperty, t["ClearSessionButton"]);
         }
         private void LoginBtn_Click(object? sender, RoutedEventArgs e)
         {
@@ -279,8 +282,10 @@ namespace steamHoursLinux
 
             worker.OnLoginSuccess += () => Dispatcher.UIThread.Post(() =>
             {
-                loginBtn.IsEnabled = true;
+                loginBtn.IsEnabled = false;
                 startBtn.IsEnabled = true;
+                clearSessionBtn.IsEnabled = true;
+
                 tbStatusLabel.Text = currentLang == "en" ? "● Status: Online" : "● Статус: В сети";
                 tbStatusLabel.Foreground = accentGreen;
                 guardPanel.IsVisible = false;
@@ -666,6 +671,11 @@ namespace steamHoursLinux
                 {
                     if (selectedTab.Name == "tiAchievements")
                     {
+                        if (worker == null || loadedGames == null || loadedGames.Count == 0)
+                        {
+                            RenderGameCards(null, true);
+                            return;
+                        }
                         if (!System.IO.File.Exists(webApiKeyPath))
                         {
                             warningOverlay.IsVisible = true;
@@ -733,6 +743,11 @@ namespace steamHoursLinux
                     }
                     else if (selectedTab.Name == "tiLibrary")
                     {
+                        if (worker == null || loadedGames == null || loadedGames.Count == 0)
+                        {
+                            RenderGameCards(null, false);
+                            return;
+                        }
                         RenderGameCards(loadedGames, false);
                     }
                 }
@@ -798,6 +813,7 @@ namespace steamHoursLinux
 
             startBtn.IsEnabled = false;
             loginBtn.IsEnabled = false;
+            clearSessionBtn.IsEnabled = false;
             stopBtn.IsEnabled = true;
 
             tbStatusLabel.Text = currentLang == "en" ? "● FARMING ACTIVE" : "● ФАРМИНГ АКТИВЕН";
@@ -822,6 +838,7 @@ namespace steamHoursLinux
 
             startBtn.IsEnabled = true;
             stopBtn.IsEnabled = false;
+            clearSessionBtn.IsEnabled = true;
 
             tbStatusLabel.Text = currentLang == "en" ? "● Status: Online (Farming stopped)" : "● Статус: В сети (Фарм остановлен)";
             tbStatusLabel.Foreground = accentBlue;
@@ -980,7 +997,8 @@ namespace steamHoursLinux
 
                 File.WriteAllText(webApiKeyPath, webApiKeyTextBox.Text?.Trim() ?? string.Empty);
             }
-            if (isDelWebApiKey) {
+            if (isDelWebApiKey)
+            {
                 File.Delete(webApiKeyPath);
                 isDelWebApiKey = false;
             }
@@ -997,7 +1015,32 @@ namespace steamHoursLinux
         {
             isDelWebApiKey = true;
             webApiKeyTextBox.Text = string.Empty;
-            
+
+        }
+
+        private void clearSessionBtn_Click(object? sender, RoutedEventArgs e)
+        {
+            System.IO.File.Delete(Path.Join(configDirectory, $"tokens_{worker.Username}.txt"));
+            worker?.Stop();
+            worker?.Dispose();
+            worker = null;
+            loadedGames.Clear();
+            selectedAppIds.Clear();
+            activeFarmingAppIds.Clear();
+            RenderGameCards(null);
+            RenderGameCards(null, true);
+            if (achievementsFlowPanel != null)
+            {
+                achievementsFlowPanel.Children.Clear();
+            }
+            if (gamesAchievementsFlowPanel != null)
+            {
+                gamesAchievementsFlowPanel.Children.Clear();
+            }
+            userAvatarBgImg.Source = new Avalonia.Media.Imaging.Bitmap(
+                Avalonia.Platform.AssetLoader.Open(new Uri("avares://steamHoursLinux/Assets/Icons/app_icon.ico")));
+            clearSessionBtn.IsEnabled = false;
+            loginBtn.IsEnabled = true;
         }
     }
 }

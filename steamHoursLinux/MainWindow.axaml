@@ -35,7 +35,7 @@
         <!-- Основной интерфейс приложения -->
         <Grid ColumnDefinitions="270,*">
             <Border Grid.Column="0" Background="{DynamicResource 141820}" Padding="15">
-                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto">
+               <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto">
                     <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Margin="0,0,0,15">
                         <!-- Аватарка пользователя -->
                         <Border Grid.Column="0" Width="44" Height="44" CornerRadius="6" ClipToBounds="True" Background="{DynamicResource 1C222D}" Margin="0,0,10,0">
@@ -173,10 +173,21 @@
                             </Style>
                         </Button.Styles>
                     </Button> 
+                    <Button x:Name="clearSessionBtn" Grid.Row="7" Content="🗑️ Очистить сессию" IsEnabled="False" Click="clearSessionBtn_Click" 
+                            Background="{DynamicResource DC3545}" Foreground="White" FontWeight="Bold" 
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
+                            Height="38" Margin="0,0,0,15"> 
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="{DynamicResource bd2635}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Style>
+                        </Button.Styles>
+                    </Button> 
 
-                    <TextBlock x:Name="tbManagementFarm" Grid.Row="7" Text="УПРАВЛЕНИЕ ФАРМОМ" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource 8C96A5}" Margin="0,5,0,5"/>
+                    <TextBlock x:Name="tbManagementFarm" Grid.Row="8" Text="УПРАВЛЕНИЕ ФАРМОМ" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource 8C96A5}" Margin="0,5,0,5"/>
 
-                    <Button x:Name="startBtn" Grid.Row="8" Content="⏩ Запустить фарм" Click="StartBtn_Click" IsEnabled="False"
+                    <Button x:Name="startBtn" Grid.Row="9" Content="⏩ Запустить фарм" Click="StartBtn_Click" IsEnabled="False"
                             Background="{DynamicResource 5CAC22}" Foreground="White" FontWeight="Bold" 
                             HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
                             Height="38" Margin="0,0,0,5">
@@ -188,7 +199,7 @@
                         </Button.Styles>
                     </Button>
 
-                    <Button x:Name="stopBtn" Grid.Row="9" Content="⏹ Остановить фарм" Click="StopBtn_Click" IsEnabled="False"
+                    <Button x:Name="stopBtn" Grid.Row="10" Content="⏹ Остановить фарм" Click="StopBtn_Click" IsEnabled="False"
                             Background="{DynamicResource DC3545}" Foreground="White" FontWeight="Bold" 
                             HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
                             Height="38" Margin="0,0,0,15"> 
@@ -201,7 +212,7 @@
                     </Button>
 
                     <!-- ⏱ ОТДЕЛЬНЫЙ БЛОК ТАЙМЕРА ФАРМА -->
-                    <Border x:Name="timerCardPanel" Grid.Row="10" Background="#12161D" CornerRadius="6" Padding="12,10" Margin="0,0,0,15" BorderBrush="{DynamicResource 2A313F}" BorderThickness="1">
+                    <Border x:Name="timerCardPanel" Grid.Row="11" Background="#12161D" CornerRadius="6" Padding="12,10" Margin="0,0,0,15" BorderBrush="{DynamicResource 2A313F}" BorderThickness="1">
                         <StackPanel Spacing="4">
                             <TextBlock x:Name="tbTimerFarm" Text="ВРЕМЯ ФАРМА" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource 8C96A5}"/>
                             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
@@ -220,7 +231,7 @@
                     </Border>
 
                     <!-- ⚙️ Кнопка настроек в нижней части панели -->
-                    <Button x:Name="settingsBtn" Grid.Row="11" Click="settingsBtn_Click" Background="{DynamicResource 12161D}" BorderBrush="{DynamicResource 2A313F}" BorderThickness="1" CornerRadius="6" HorizontalAlignment="Stretch" Height="36" Margin="0,0,0,10" Padding="10,0">
+                    <Button x:Name="settingsBtn" Grid.Row="12" Click="settingsBtn_Click" Background="{DynamicResource 12161D}" BorderBrush="{DynamicResource 2A313F}" BorderThickness="1" CornerRadius="6" HorizontalAlignment="Stretch" Height="36" Margin="0,0,0,10" Padding="10,0">
                         
                         <Button.Styles>
                             <Style Selector="Button:pointerover /template/ ContentPresenter">
@@ -238,10 +249,10 @@
                     </Button>
 
                     <!-- Статус прижат к нижнему краю -->
-                    <TextBlock x:Name="tbStatusLabel" Grid.Row="13" Text="● Статус: Ожидание входа" FontWeight="Bold" Foreground="{DynamicResource 8C96A5}" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="tbStatusLabel" Grid.Row="14" Text="● Статус: Ожидание входа" FontWeight="Bold" Foreground="{DynamicResource 8C96A5}" TextWrapping="Wrap"/>
 
                     <!-- Окно Steam Guard -->
-                    <Border x:Name="guardPanel" Grid.Row="0" Grid.RowSpan="14" Background="{DynamicResource 2D3441}" CornerRadius="5" Padding="10" IsVisible="False" VerticalAlignment="Center" ZIndex="10">
+                    <Border x:Name="guardPanel" Grid.Row="0" Grid.RowSpan="15" Background="{DynamicResource 2D3441}" CornerRadius="5" Padding="10" IsVisible="False" VerticalAlignment="Center" ZIndex="10">
                         <StackPanel Spacing="8">
                             <TextBlock Text="Код Steam Guard:" FontWeight="Bold"/>
                             <TextBox x:Name="guardBox" MaxLength="6" TextAlignment="Center" FontFamily="avares://steamHoursLinux/Assets/Fonts/JetBrains_Mono#JetBrains Mono" FontSize="16" FontWeight="Bold"/>

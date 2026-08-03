@@ -12,6 +12,7 @@ namespace steamHoursLinux
         private readonly string username;
         private readonly string password;
         private readonly string tokenFilePath;
+        public string Username => username;
         string currentLang = "ru";
         public string AccessToken { get; private set; }
         public string RefreshToken { get; private set; }
