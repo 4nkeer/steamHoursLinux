@@ -2,27 +2,49 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="steamHoursLinux.MainWindow"
         Title="Steam Hour Booster"
-        Width="1280" Height="820"
+        Width="1280" Height="850"
         MinWidth="750" MinHeight="650"
         WindowStartupLocation="CenterScreen"
-        Background="#181C25"
-        Foreground="#F0F0F0"
+        Background="{DynamicResource 181C25Color}"
+        Foreground="{DynamicResource F0F0F0}"
         FontFamily="avares://steamHoursLinux/Assets/Fonts/Noto_Sans#Noto Sans">
-
+    <Window.Resources>
+        <Color x:Key="181C25Color">#181C25</Color>
+        <SolidColorBrush x:Key="MainBg" Color="#181C25"/>
+        <SolidColorBrush x:Key="141820" Color="#141820"/>
+        <SolidColorBrush x:Key="12161D" Color="#12161D"/>
+        <SolidColorBrush x:Key="1A2230" Color="#1A2230"/>
+        <SolidColorBrush x:Key="1C222D" Color="#1C222D"/>
+        <SolidColorBrush x:Key="00A2FF" Color="#00A2FF"/>
+        <SolidColorBrush x:Key="007ACC" Color="#007ACC"/>
+        <SolidColorBrush x:Key="8C96A5" Color="#8C96A5"/>
+        <SolidColorBrush x:Key="F0F0F0" Color="#F0F0F0"/>
+        <SolidColorBrush x:Key="263145" Color="#263145"/>
+        <SolidColorBrush x:Key="4c8c1d" Color="#4c8c1d"/>
+        <SolidColorBrush x:Key="5CAC22" Color="#5CAC22"/>
+        <SolidColorBrush x:Key="DC3545" Color="#DC3545"/>
+        <SolidColorBrush x:Key="bd2635" Color="#bd2635"/>
+        <SolidColorBrush x:Key="2A313F" Color="#2A313F"/>
+        <SolidColorBrush x:Key="2D3441" Color="#2D3441"/>
+        <SolidColorBrush x:Key="222834" Color="#222834"/>
+        <SolidColorBrush x:Key="B4C8DC" Color="#B4C8DC"/>
+        <SolidColorBrush x:Key="E6141820" Color="#E6141820"/>
+        <SolidColorBrush x:Key="CC141820" Color="#CC141820"/>
+    </Window.Resources>
     <Grid>
         <!-- Основной интерфейс приложения -->
         <Grid ColumnDefinitions="270,*">
-            <Border Grid.Column="0" Background="#141820" Padding="15">
+            <Border Grid.Column="0" Background="{DynamicResource 141820}" Padding="15">
                 <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto">
                     <Grid Grid.Row="0" ColumnDefinitions="Auto,*" Margin="0,0,0,15">
                         <!-- Аватарка пользователя -->
-                        <Border Grid.Column="0" Width="44" Height="44" CornerRadius="6" ClipToBounds="True" Background="#1C222D" Margin="0,0,10,0">
+                        <Border Grid.Column="0" Width="44" Height="44" CornerRadius="6" ClipToBounds="True" Background="{DynamicResource 1C222D}" Margin="0,0,10,0">
                             <Image x:Name="userAvatarBgImg" Stretch="UniformToFill"/>
                         </Border>
                         
                         <!-- Название и автор -->
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
-                            <TextBlock Text="STEAM HOUR BOOSTER" FontSize="16" FontWeight="Bold" Foreground="#00A2FF"/>
+                            <TextBlock Text="STEAM HOUR BOOSTER" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource 00A2FF}"/>
                            
                             <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                                  <TextBlock Text="by ankeer" FontSize="11" FontWeight="Bold" Foreground="#5c5c5c"/>
@@ -44,7 +66,7 @@
                                     <Border Width="15" Height="15" Background="#5c5c5c">
                                         <Border.Styles>
                                             <Style Selector="HyperlinkButton:pointerover Border">
-                                                <Setter Property="Background" Value="#00A2FF"/>
+                                                <Setter Property="Background" Value="{DynamicResource 00A2FF}"/>
                                             </Style>
                                             <Style Selector="Border">
                                                 <Setter Property="Transitions">
@@ -77,7 +99,7 @@
                                     <Border Width="15" Height="15" Background="#5c5c5c">
                                         <Border.Styles>
                                             <Style Selector="HyperlinkButton:pointerover Border">
-                                                <Setter Property="Background" Value="#00A2FF"/>
+                                                <Setter Property="Background" Value="{DynamicResource 00A2FF}"/>
                                             </Style>
                                             <Style Selector="Border">
                                                 <Setter Property="Transitions">
@@ -96,135 +118,135 @@
                         </StackPanel>
                     </Grid>
 
-                    <TextBlock x:Name="tbAuth" Grid.Row="1" Text="АВТОРИЗАЦИЯ" FontSize="11" FontWeight="Bold" Foreground="#8C96A5" Margin="0,5,0,5"/>
+                    <TextBlock x:Name="tbAuth" Grid.Row="1" Text="АВТОРИЗАЦИЯ" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource 8C96A5}" Margin="0,5,0,5"/>
                     
-                    <Border Grid.Row="2" Background="#12161D" BorderBrush="#8C96A5" BorderThickness="1" CornerRadius="4" Margin="0,0,0,5">
-                        <TextBox x:Name="loginBox" BorderThickness="0" PlaceholderText="Логин" Foreground="#8C96A5" Background="#12161D" CornerRadius="5" PlaceholderForeground="#F0F0F0"> 
+                    <Border Grid.Row="2" Background="{DynamicResource 12161D}" BorderBrush="{DynamicResource 263145}" BorderThickness="2" CornerRadius="4" Margin="0,0,0,5">
+                        <TextBox x:Name="loginBox" BorderThickness="0" PlaceholderText="Логин" Foreground="{DynamicResource 8C96A5}" Background="{DynamicResource 12161D}" CornerRadius="5" PlaceholderForeground="{DynamicResource F0F0F0}"> 
                             <TextBox.Styles>
                                 <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-                                    <Setter Property="Background" Value="#1A2230"/>
+                                    <Setter Property="Background" Value="{DynamicResource 1A2230}"/>
                                 </Style>
                             </TextBox.Styles>
                         </TextBox>
                     </Border>
                     
-                    <Border Grid.Row="3" Background="#12161D" BorderBrush="#8C96A5" BorderThickness="1" CornerRadius="4" Margin="0,0,0,5">
-                        <TextBox x:Name="passwordBox" BorderThickness="0" PasswordChar="•" PlaceholderText="Пароль" Foreground="#8C96A5" Background="#12161D" CornerRadius="5" PlaceholderForeground="#F0F0F0">
+                    <Border Grid.Row="3" Background="{DynamicResource 12161D}" BorderBrush="{DynamicResource 263145}" BorderThickness="2" CornerRadius="4" Margin="0,0,0,5">
+                        <TextBox x:Name="passwordBox" BorderThickness="0" PasswordChar="•" PlaceholderText="Пароль" Foreground="{DynamicResource 8C96A5}" Background="{DynamicResource 12161D}" CornerRadius="5" PlaceholderForeground="{DynamicResource F0F0F0}">
                             <TextBox.Styles>
                                 <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-                                    <Setter Property="Background" Value="#1A2230"/>
+                                    <Setter Property="Background" Value="{DynamicResource 1A2230}"/>
                                 </Style>
                             </TextBox.Styles>
                         </TextBox>
                     </Border>
                     
-                    <Border Grid.Row="4" Background="#12161D" BorderBrush="#8C96A5" BorderThickness="1" CornerRadius="4" Margin="0,0,0,5">
-                        <TextBox x:Name="appIdBox" BorderThickness="0" PlaceholderText="AppID (необязательно)" Foreground="#8C96A5" Background="#12161D" CornerRadius="5" PlaceholderForeground="#F0F0F0"> 
+                    <Border Grid.Row="4" Background="{DynamicResource 12161D}" BorderBrush="{DynamicResource 263145}" BorderThickness="2" CornerRadius="4" Margin="0,0,0,5">
+                        <TextBox x:Name="appIdBox" BorderThickness="0" PlaceholderText="AppID (необязательно)" Foreground="{DynamicResource 8C96A5}" Background="{DynamicResource 12161D}" CornerRadius="5" PlaceholderForeground="{DynamicResource F0F0F0}"> 
                             <TextBox.Styles>
                                 <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-                                    <Setter Property="Background" Value="#1A2230"/>
+                                    <Setter Property="Background" Value="{DynamicResource 1A2230}"/>
                                 </Style>
                             </TextBox.Styles>   
                         </TextBox>
                     </Border>
 
                     <!-- ☑ Галочка «Запомнить данные» -->
-                    <CheckBox x:Name="rememberMeCheckBox" Grid.Row="5" Content="Запомни меня" FontSize="11" Foreground="#8C96A5" Margin="0,0,0,10"> 
+                    <CheckBox x:Name="rememberMeCheckBox" Grid.Row="5" Content="Запомни меня" FontSize="11" Foreground="{DynamicResource 8C96A5}" Margin="0,0,0,10"> 
                         <CheckBox.Styles>
                             <Style Selector="CheckBox:pointerover /template/ ContentPresenter">
                                 <Setter Property="Foreground" Value="White"/>
                             </Style>
                             <Style Selector="CheckBox:pointerover /template/ Border#NormalRectangle">
-                                <Setter Property="BorderBrush" Value="#8C96A5"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource 8C96A5}"/>
                             </Style>
                         </CheckBox.Styles>
                     </CheckBox>
 
                     <Button x:Name="loginBtn" Grid.Row="6" Content="✅ Войти в аккаунт" Click="LoginBtn_Click" 
-                            Background="#00A2FF" Foreground="White" FontWeight="Bold" 
+                            Background="{DynamicResource 00A2FF}" Foreground="White" FontWeight="Bold" 
                             HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
                             Height="38" Margin="0,0,0,15"> 
                         <Button.Styles>
                             <Style Selector="Button:pointerover /template/ ContentPresenter">
-                                <Setter Property="Background" Value="#007ACC"/>
+                                <Setter Property="Background" Value="{DynamicResource 007ACC}"/>
                                 <Setter Property="Foreground" Value="White"/>
                             </Style>
                         </Button.Styles>
                     </Button> 
 
-                    <TextBlock x:Name="tbManagementFarm" Grid.Row="7" Text="УПРАВЛЕНИЕ ФАРМОМ" FontSize="11" FontWeight="Bold" Foreground="#8C96A5" Margin="0,5,0,5"/>
+                    <TextBlock x:Name="tbManagementFarm" Grid.Row="7" Text="УПРАВЛЕНИЕ ФАРМОМ" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource 8C96A5}" Margin="0,5,0,5"/>
 
                     <Button x:Name="startBtn" Grid.Row="8" Content="⏩ Запустить фарм" Click="StartBtn_Click" IsEnabled="False"
-                            Background="#5CAC22" Foreground="White" FontWeight="Bold" 
+                            Background="{DynamicResource 5CAC22}" Foreground="White" FontWeight="Bold" 
                             HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
                             Height="38" Margin="0,0,0,5">
                         <Button.Styles>
                             <Style Selector="Button:pointerover /template/ ContentPresenter">
-                                <Setter Property="Background" Value="#4c8c1d"/>
+                                <Setter Property="Background" Value="{DynamicResource 4c8c1d}"/>
                                 <Setter Property="Foreground" Value="White"/>
                             </Style>
                         </Button.Styles>
                     </Button>
 
                     <Button x:Name="stopBtn" Grid.Row="9" Content="⏹ Остановить фарм" Click="StopBtn_Click" IsEnabled="False"
-                            Background="#DC3545" Foreground="White" FontWeight="Bold" 
+                            Background="{DynamicResource DC3545}" Foreground="White" FontWeight="Bold" 
                             HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
                             Height="38" Margin="0,0,0,15"> 
                         <Button.Styles>
                             <Style Selector="Button:pointerover /template/ ContentPresenter">
-                                <Setter Property="Background" Value="#bd2635"/>
+                                <Setter Property="Background" Value="{DynamicResource bd2635}"/>
                                 <Setter Property="Foreground" Value="White"/>
                             </Style>
                         </Button.Styles>
                     </Button>
 
                     <!-- ⏱ ОТДЕЛЬНЫЙ БЛОК ТАЙМЕРА ФАРМА -->
-                    <Border x:Name="timerCardPanel" Grid.Row="10" Background="#12161D" CornerRadius="6" Padding="12,10" Margin="0,0,0,15" BorderBrush="#2A313F" BorderThickness="1">
+                    <Border x:Name="timerCardPanel" Grid.Row="10" Background="#12161D" CornerRadius="6" Padding="12,10" Margin="0,0,0,15" BorderBrush="{DynamicResource 2A313F}" BorderThickness="1">
                         <StackPanel Spacing="4">
-                            <TextBlock x:Name="tbTimerFarm" Text="ВРЕМЯ ФАРМА" FontSize="10" FontWeight="Bold" Foreground="#8C96A5"/>
+                            <TextBlock x:Name="tbTimerFarm" Text="ВРЕМЯ ФАРМА" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource 8C96A5}"/>
                             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                 <TextBlock Text="⏱" FontSize="16" VerticalAlignment="Center"/>
                                 <TextBlock x:Name="timerText" 
                                            Text="00:00:00" 
                                            FontSize="15" 
                                            FontWeight="Bold" 
-                                           Foreground="#8C96A5"
+                                           Foreground="{DynamicResource 8C96A5}"
                                            FontFamily="avares://steamHoursLinux/Assets/Fonts/JetBrains_Mono#JetBrains Mono" 
                                            TextWrapping="Wrap"
                                            VerticalAlignment="Center"/>
                             </StackPanel>
-                            <TextBlock x:Name="farmingInfoLabel" Text="Фарм не запущен" FontSize="10" Foreground="#8C96A5" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                            <TextBlock x:Name="farmingInfoLabel" Text="Фарм не запущен" FontSize="10" Foreground="{DynamicResource 8C96A5}" TextWrapping="Wrap" Margin="0,2,0,0"/>
                         </StackPanel>
                     </Border>
 
                     <!-- ⚙️ Кнопка настроек в нижней части панели -->
-                    <Button x:Name="settingsBtn" Grid.Row="11" Click="settingsBtn_Click" Background="#12161D" BorderBrush="#2A313F" BorderThickness="1" CornerRadius="6" HorizontalAlignment="Stretch" Height="36" Margin="0,0,0,10" Padding="10,0">
+                    <Button x:Name="settingsBtn" Grid.Row="11" Click="settingsBtn_Click" Background="{DynamicResource 12161D}" BorderBrush="{DynamicResource 2A313F}" BorderThickness="1" CornerRadius="6" HorizontalAlignment="Stretch" Height="36" Margin="0,0,0,10" Padding="10,0">
                         
                         <Button.Styles>
                             <Style Selector="Button:pointerover /template/ ContentPresenter">
-                                <Setter Property="Background" Value="#1A2230"/>
+                                <Setter Property="Background" Value="{DynamicResource 1A2230}"/>
                             </Style>
                         </Button.Styles>
                         <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Border Width="16" Height="16" Background="#8C96A5" VerticalAlignment="Center">
+                            <Border Width="16" Height="16" Background="{DynamicResource 8C96A5}" VerticalAlignment="Center">
                                 <Border.OpacityMask>
                                     <ImageBrush Source="avares://steamHoursLinux/Assets/Icons/settings.png" Stretch="Uniform"/>
                                 </Border.OpacityMask>
                             </Border>
-                            <TextBlock x:Name="tbSettings" Text="Настройки" FontSize="12" FontWeight="Bold" Foreground="#8C96A5" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="tbSettings" Text="Настройки" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource 8C96A5}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 
                     <!-- Статус прижат к нижнему краю -->
-                    <TextBlock x:Name="tbStatusLabel" Grid.Row="13" Text="● Статус: Ожидание входа" FontWeight="Bold" Foreground="#8C96A5" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="tbStatusLabel" Grid.Row="13" Text="● Статус: Ожидание входа" FontWeight="Bold" Foreground="{DynamicResource 8C96A5}" TextWrapping="Wrap"/>
 
                     <!-- Окно Steam Guard -->
-                    <Border x:Name="guardPanel" Grid.Row="0" Grid.RowSpan="14" Background="#2D3441" CornerRadius="5" Padding="10" IsVisible="False" VerticalAlignment="Center" ZIndex="10">
+                    <Border x:Name="guardPanel" Grid.Row="0" Grid.RowSpan="14" Background="{DynamicResource 2D3441}" CornerRadius="5" Padding="10" IsVisible="False" VerticalAlignment="Center" ZIndex="10">
                         <StackPanel Spacing="8">
                             <TextBlock Text="Код Steam Guard:" FontWeight="Bold"/>
                             <TextBox x:Name="guardBox" MaxLength="6" TextAlignment="Center" FontFamily="avares://steamHoursLinux/Assets/Fonts/JetBrains_Mono#JetBrains Mono" FontSize="16" FontWeight="Bold"/>
-                            <Button x:Name="guardBtn" Content="Подтвердить код" Click="GuardBtn_Click" Background="#5CAC22" Foreground="White" FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="34"/>
-                            <Button x:Name="guardApproveBtn" Content="📱 Подтвердил в App" Click="GuardApproveBtn_Click" Background="#00A2FF" Foreground="White" FontSize="11" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="34"/>
+                            <Button x:Name="guardBtn" Content="Подтвердить код" Click="GuardBtn_Click" Background="{DynamicResource 5CAC22}" Foreground="White" FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="34"/>
+                            <Button x:Name="guardApproveBtn" Content="📱 Подтвердил в App" Click="GuardApproveBtn_Click" Background="{DynamicResource 00A2FF}" Foreground="White" FontSize="11" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="34"/>
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -243,55 +265,55 @@
                     <Grid RowDefinitions="Auto,*,Auto,190" Margin="5">
                         
                         <!-- Поиск -->
-                        <Border Grid.Row="0" Background="#12161D" BorderBrush="#8C96A5" BorderThickness="1" CornerRadius="4" Margin="0,0,0,10">
+                        <Border Grid.Row="0" Background="{DynamicResource 12161D}" BorderBrush="{DynamicResource 263145}" BorderThickness="2" CornerRadius="4" Margin="0,0,0,10">
                             <TextBox x:Name="tbSearchBox" PlaceholderText="🔍 Поиск игры по названию или AppID..." 
-                                     Foreground="#8C96A5" Background="#12161D" BorderThickness="0" PlaceholderForeground="#F0F0F0" CornerRadius="5" TextChanged="SearchBox_TextChanged"> 
+                                     Foreground="{DynamicResource 8C96A5}" Background="{DynamicResource 12161D}" BorderThickness="0" PlaceholderForeground="{DynamicResource F0F0F0}" CornerRadius="5" TextChanged="SearchBox_TextChanged"> 
                                 <TextBox.Styles>
                                     <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-                                        <Setter Property="Background" Value="#1A2230"/>
+                                        <Setter Property="Background" Value="{DynamicResource 1A2230}"/>
                                     </Style>
                                 </TextBox.Styles>
                             </TextBox>
                         </Border>
 
                         <!-- Список игр -->
-                        <ScrollViewer x:Name="gamesScrollViewer" Grid.Row="1" Background="#222834" Margin="0,0,0,10">
+                        <ScrollViewer x:Name="gamesScrollViewer" Grid.Row="1" Background="{DynamicResource 222834}" Margin="0,0,0,10">
                             <WrapPanel x:Name="gamesFlowPanel" ItemWidth="175" ItemHeight="85" Margin="5"/>
                         </ScrollViewer>
 
-                        <TextBlock x:Name="tbLogHeader" Grid.Row="2" Text="Журнал событий" FontSize="12" FontWeight="Bold" Foreground="#8C96A5" Margin="0,0,0,5"/>
+                        <TextBlock x:Name="tbLogHeader" Grid.Row="2" Text="Журнал событий" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource 8C96A5}" Margin="0,0,0,5"/>
 
                         <!-- Окно логов -->
-                        <ScrollViewer x:Name="logScrollViewer" Grid.Row="3" Background="#12161D">
-                            <SelectableTextBlock x:Name="logBox" FontFamily="avares://steamHoursLinux/Assets/Fonts/JetBrains_Mono#JetBrains Mono" FontSize="12" Foreground="#B4C8DC" Padding="8" TextWrapping="Wrap"/>
+                        <ScrollViewer x:Name="logScrollViewer" Grid.Row="3" Background="{DynamicResource 12161D}">
+                            <SelectableTextBlock x:Name="logBox" FontFamily="avares://steamHoursLinux/Assets/Fonts/JetBrains_Mono#JetBrains Mono" FontSize="12" Foreground="{DynamicResource B4C8DC}" Padding="8" TextWrapping="Wrap"/>
                         </ScrollViewer>
                     </Grid>
                 </TabItem>
 
                 <!-- Вкладка 2: Достижения (заготовка) -->
-                <TabItem x:Name="tiAchievements" Header="🏆 Достижения" Foreground="#8C96A5">
+                <TabItem x:Name="tiAchievements" Header="🏆 Достижения" Foreground="{DynamicResource 8C96A5}">
                     <TabItem.Styles>
                         <Style Selector="TabItem:pointerover /template/ ContentPresenter">
-                            <Setter Property="Foreground" Value="#00A2FF"/>
+                            <Setter Property="Foreground" Value="{DynamicResource 00A2FF}"/>
                         </Style>
                     </TabItem.Styles>
                     <Grid RowDefinitions="Auto,300,*" Margin="5">
 
-                        <Border Grid.Row="0" Background="#12161D" BorderBrush="#8C96A5" BorderThickness="1" CornerRadius="4" Margin="0,0,0,10">
+                        <Border Grid.Row="0" Background="{DynamicResource 12161D}" BorderBrush="{DynamicResource 263145}" BorderThickness="2" CornerRadius="4" Margin="0,0,0,10">
                             <TextBox x:Name="tbSearchGameAchievementsBox" PlaceholderText="🔍 Поиск игры по названию или AppID..." 
-                                     Foreground="#8C96A5" Background="#12161D" BorderThickness="0" PlaceholderForeground="#F0F0F0" CornerRadius="5" TextChanged="tbSearchGameAchievementsBox_TextChanged"> 
+                                     Foreground="{DynamicResource 8C96A5}" Background="{DynamicResource 12161D}" BorderThickness="0" PlaceholderForeground="{DynamicResource F0F0F0}" CornerRadius="5" TextChanged="tbSearchGameAchievementsBox_TextChanged"> 
                                 <TextBox.Styles>
                                     <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-                                        <Setter Property="Background" Value="#1A2230"/>
+                                        <Setter Property="Background" Value="{DynamicResource 1A2230}"/>
                                     </Style>
                                 </TextBox.Styles>
                             </TextBox>
                         </Border>
 
-                        <ScrollViewer x:Name="gamesScrollAchievementsViewer" Grid.Row="1" Background="#222834" Margin="0,0,0,10">
+                        <ScrollViewer x:Name="gamesScrollAchievementsViewer" Grid.Row="1" Background="{DynamicResource 222834}" Margin="0,0,0,10">
                             <WrapPanel x:Name="gamesAchievementsFlowPanel" ItemWidth="175" ItemHeight="85" Margin="5"/>
                         </ScrollViewer>
-                         <ScrollViewer x:Name="achievementsScrollViewer" Grid.Row="2" Background="#222834" Margin="0,0,0,10">
+                         <ScrollViewer x:Name="achievementsScrollViewer" Grid.Row="2" Background="{DynamicResource 222834}" Margin="0,0,0,10">
                             <UniformGrid x:Name="achievementsFlowPanel" Columns="3" Margin="5" />
                         </ScrollViewer>
                     </Grid>
@@ -301,51 +323,67 @@
         </Grid>
 
         <!-- 🌐 Полноэкранное окно выбора языка при первом запуске -->
-        <Border x:Name="languageSelectionPanel" Background="#E6141820" IsVisible="False" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ZIndex="100">
-            <Border Background="#1C222D"  CornerRadius="8" Padding="25" Width="1280" Height="820" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Border x:Name="languageSelectionPanel" Background="{DynamicResource E6141820}" IsVisible="False" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ZIndex="100">
+            <Border Background="{DynamicResource 1C222D}"  CornerRadius="8" Padding="25" Width="1280" Height="820" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <StackPanel Spacing="15" VerticalAlignment="Center">
                     <TextBlock Text="🌐 Выберите язык / Select Language" FontWeight="Bold" FontSize="25" Foreground="White" TextAlignment="Center"/>
                   
                     <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
-                        <Button x:Name="langRuBtn" Click="LangRuBtn_Click" FontSize="20" Grid.Column="0" Content="Русский" Background="#2A313F" Foreground="White" FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="50" Margin="0,0,8,0"/>
-                        <Button x:Name="langEnBtn" Click="LangEnBtn_Click" FontSize="20" Grid.Column="1" Content="English" Background="#2A313F" Foreground="White" FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="50" Margin="8,0,0,0"/>
+                        <Button x:Name="langRuBtn" Click="LangRuBtn_Click" FontSize="20" Grid.Column="0" Content="Русский" Background="{DynamicResource 2A313F}" Foreground="White" FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="50" Margin="0,0,8,0"/>
+                        <Button x:Name="langEnBtn" Click="LangEnBtn_Click" FontSize="20" Grid.Column="1" Content="English" Background="{DynamicResource 2A313F}" Foreground="White" FontWeight="Bold" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="50" Margin="8,0,0,0"/>
                     </Grid>
                 </StackPanel>
             </Border>
         </Border>
 
         <!-- ⚙️ Встроенное оверлейное окно настроек -->
-        <Border x:Name="settingsOverlayPanel" Background="#CC141820" IsVisible="False" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ZIndex="90">
-            <Border Background="#1C222D" BorderBrush="#2A313F" BorderThickness="1" CornerRadius="8" Padding="20" Width="450" Height="320" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Border x:Name="settingsOverlayPanel" Background="{DynamicResource CC141820}" IsVisible="False" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ZIndex="90">
+            <Border Background="{DynamicResource 1C222D}" BorderBrush="{DynamicResource 2A313F}" BorderThickness="1" CornerRadius="8" Padding="20" Width="450" Height="320" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <Grid RowDefinitions="Auto,*,Auto">
-                    <TextBlock x:Name="tbSettingsHeader" Grid.Row="0" TextAlignment="Center" Text="Настройки приложения" FontWeight="Bold" FontSize="16" Foreground="#00A2FF" Margin="0,0,0,20"/>
+                    <TextBlock x:Name="tbSettingsHeader" Grid.Row="0" TextAlignment="Center" Text="Настройки приложения" FontWeight="Bold" FontSize="16" Foreground="{DynamicResource 00A2FF}" Margin="0,0,0,20"/>
                     
                     <StackPanel Grid.Row="1" Spacing="12">
-                        <TextBlock x:Name="tbLanguageInterface" Text="ЯЗЫК ИНТЕРФЕЙСА" FontSize="11" FontWeight="Bold" Foreground="#8C96A5"/>
+                        <TextBlock x:Name="tbLanguageInterface" Text="ЯЗЫК ИНТЕРФЕЙСА" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource 8C96A5}"/>
+                        <Border Grid.Row="1" Background="{DynamicResource 12161D}" BorderBrush="{DynamicResource 263145}" BorderThickness="2" CornerRadius="4" Margin="0,0,0,5">
                         <ComboBox x:Name="languageComboBox" 
                                     SelectedIndex="0" 
                                     HorizontalAlignment="Stretch" 
-                                    Background="#12161D" 
-                                    Foreground="#8C96A5"
+                                    Background="{DynamicResource 12161D}" 
+                                    Foreground="{DynamicResource 8C96A5}"
                                     >
+                            <ComboBox.Styles>
+        <!-- Цвет фона и рамки при наведении мыши -->
+                            <Style Selector="ComboBox:pointerover">
+                                <Setter Property="Background" Value="{DynamicResource 1A2230}"/>
+          
+                            </Style>
+                                </ComboBox.Styles>
                             <ComboBoxItem Content="English" Tag="en"/>
                             <ComboBoxItem Content="Русский" Tag="ru"/>
                         </ComboBox>
-                        <TextBlock x:Name="tbWebApiKey" Text="WEB API КЛЮЧ" FontSize="11" FontWeight="Bold" Foreground="#8C96A5"/>
+                        </Border>
+                        <TextBlock x:Name="tbWebApiKey" Text="WEB API КЛЮЧ" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource 8C96A5}"/>
                         <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Border Grid.Row="4" Background="{DynamicResource 12161D}" BorderBrush="{DynamicResource 263145}" BorderThickness="2" CornerRadius="4" Margin="0,0,0,5">
                         <TextBox x:Name="webApiKeyTextBox" 
-                                    Background="#12161D" 
-                                    Foreground="#8C96A5" 
+                                    Background="{DynamicResource 12161D}" 
+                                    Foreground="{DynamicResource 8C96A5}" 
                                     Width="360" 
-                                    VerticalAlignment="Center"/>
-    
+                                    VerticalAlignment="Center">
+                         <TextBox.Styles>
+                                <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                                    <Setter Property="Background" Value="{DynamicResource 1A2230}"/>
+                                </Style>
+                            </TextBox.Styles>
+                        </TextBox>
+                        </Border>
                         <Button x:Name="clearWebApiKeyBtn" Content="🗑️" 
-                                Background="#DC3545" 
+                                Background="{DynamicResource DC3545}" 
                                 Foreground="White" 
                                 VerticalAlignment="Center" Click="clearWebApiKeyBtn_Click">
                             <Button.Styles>
                             <Style Selector="Button:pointerover /template/ ContentPresenter">
-                                <Setter Property="Background" Value="#bd2635"/>
+                                <Setter Property="Background" Value="{DynamicResource bd2635}"/>
                                 <Setter Property="Foreground" Value="White"/>
                             </Style>
                         </Button.Styles>
@@ -354,18 +392,25 @@
                     </StackPanel>
 
                     <Button x:Name="closeAndSaveSettingsBtn" Grid.Row="2" Content="Сохранить и закрыть"  
-                            Background="#00A2FF" Foreground="White" FontWeight="Bold" 
+                            Background="{DynamicResource 00A2FF}" Foreground="White" FontWeight="Bold" 
                             HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" 
-                            Height="36" Click="closeAndSaveSettingsBtn_Click"/>
+                            Height="36" Click="closeAndSaveSettingsBtn_Click">
+                         <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="{DynamicResource 007ACC}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Style>
+                        </Button.Styles>
+                    </Button>
                 </Grid>
             </Border>
         </Border>
-      <Border x:Name="warningOverlay" Background="#CC141820" IsVisible="False" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ZIndex="95">
-    <Border Background="#1C222D" BorderBrush="#2A313F" BorderThickness="1" CornerRadius="8" Padding="20" Width="400" Height="200" VerticalAlignment="Center" HorizontalAlignment="Center">
+      <Border x:Name="warningOverlay" Background="{DynamicResource CC141820}" IsVisible="False" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ZIndex="95">
+    <Border Background="{DynamicResource 1C222D}" BorderBrush="{DynamicResource 2A313F}" BorderThickness="1" CornerRadius="8" Padding="20" Width="400" Height="200" VerticalAlignment="Center" HorizontalAlignment="Center">
         <Grid RowDefinitions="Auto, *, Auto">
             
             <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="0,0,0,10">
-                <Border Width="40" Height="40" CornerRadius="8" Background="#2A313F" VerticalAlignment="Center">
+                <Border Width="40" Height="40" CornerRadius="8" Background="{DynamicResource 2A313F}" VerticalAlignment="Center">
                     <TextBlock Text="⚠️" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Border>
                 <TextBlock x:Name="warningTitle" Text="Предупреждение" FontWeight="Bold" FontSize="16" Foreground="White" VerticalAlignment="Center"/>
@@ -375,7 +420,7 @@
                     <TextBlock x:Name="warningMessage" 
                                TextWrapping="Wrap" 
                                FontSize="12" 
-                               Foreground="#B4C8DC" 
+                               Foreground="{DynamicResource B4C8DC}" 
                                TextAlignment="Center">Для действий с достижениями нуженWeb API ключ. Получить его можно на сайте Steam. После чего вставить в настройках приложения.</TextBlock>
                 </StackPanel>
             </ScrollViewer>
@@ -385,7 +430,7 @@
                     HorizontalAlignment="Stretch" 
                     HorizontalContentAlignment="Center"
                     VerticalContentAlignment="Center"
-                    Background="#2A313F"
+                    Background="{DynamicResource 2A313F}"
                     Foreground="White"
                     Height="35" Click="closeInfoBtn_Click"/>
         </Grid>
