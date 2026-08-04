@@ -302,7 +302,7 @@
                 </TabItem>
 
                 <!-- Вкладка 2: Достижения (заготовка) -->
-                <TabItem x:Name="tiAchievements" Header="🏆 Достижения" Foreground="{DynamicResource 8C96A5}">
+                <TabItem x:Name="tiAchievements" IsVisible="False" Header="🏆 Достижения" Foreground="{DynamicResource 8C96A5}">
                     <TabItem.Styles>
                         <Style Selector="TabItem:pointerover /template/ ContentPresenter">
                             <Setter Property="Foreground" Value="{DynamicResource 00A2FF}"/>
